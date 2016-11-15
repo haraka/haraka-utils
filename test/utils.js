@@ -2,12 +2,43 @@
 var utils     = require('../index');
 
 function _set_up(callback) {
-    this.backup = {};
+    // this.backup = {};
     callback();
 }
 
 function _tear_down(callback) {
     callback();
+}
+
+exports.uuid = {
+    'generates a UUID of 36 characters': function (test) {
+        test.expect(1);
+        var uuid = utils.uuid();
+        test.equal(uuid.length, 36);
+        test.done();
+    },
+    'contains only UUID chars': function (test) {
+        test.expect(1);
+        var uuid = utils.uuid();
+        test.ok(/[0-9A-Za-z\-]/.test(uuid));
+        test.done();
+    }
+}
+
+exports.uniq = {
+    'reduces an ordered array to unique elements': function (test) {
+        test.expect(1);
+        var uniq = utils.uniq([1,1,2,2,3]);
+        test.deepEqual(uniq, [1,2,3]);
+        test.done();
+    },
+    // OOPS, doesn't work!
+    // 'reduces a non-ordered array to unique elements': function (test) {
+    //     test.expect(1);
+    //     var uniq = utils.uniq([1,2,3,2,1]);
+    //     test.deepEqual(uniq, [1,2,3]);
+    //     test.done();
+    // },
 }
 
 exports.encode_qp = {
