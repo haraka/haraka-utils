@@ -1,0 +1,33 @@
+{
+  "name": "haraka-utils",
+  "version": "1.0.0",
+  "description": "Haraka's general purpose utilities",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint *.js test/*.js",
+    "test": "./run_tests",
+    "cover": "./node_modules/.bin/istanbul cover ./run_tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haraka/haraka-utils.git"
+  },
+  "keywords": [
+    "haraka",
+    "utility",
+    "utilities"
+  ],
+  "author": "Haraka Team <harakateam@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/haraka/haraka-utils/issues"
+  },
+  "homepage": "https://github.com/haraka/haraka-utils#readme",
+  "devDependencies": {
+    "eslint": "^3.10.1",
+    "nodeunit": "^0.10.2"
+  }
+}
