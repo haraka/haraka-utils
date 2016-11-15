@@ -363,3 +363,34 @@ exports.elapsed = {
         test.done();
     },
 };
+
+exports.prettySize = {
+    'formats into 1024 sized kB': function (test) {
+        test.expect(1);
+        test.equal(utils.prettySize(10000), '9.77kB');
+        test.done();
+    },
+    'formats into 1024 sized MB': function (test) {
+        test.expect(1);
+        test.equal(utils.prettySize(10000000), '9.54MB');
+        test.done();
+    },
+    'formats into 1024 sized GB': function (test) {
+        test.expect(1);
+        test.equal(utils.prettySize(10000000000), '9.31GB');
+        test.done();
+    },
+    'formats into 1024 sized TB': function (test) {
+        test.expect(1);
+        test.equal(utils.prettySize(10000000000000), '9.09TB');
+        test.done();
+    },
+}
+exports.shuffle = {
+    'randomly returns an element from an array': function (test) {
+        test.expect(2);
+        test.equal(utils.shuffle(['only']), 'only');
+        test.ok(typeof utils.shuffle(['one','two']), 'string');
+        test.done();
+    },
+}
