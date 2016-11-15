@@ -3,8 +3,8 @@ engines:
     enabled: true
     channel: "eslint-3"
     config:
-      config: ".eslintrc"
+      config: ".eslintrc.json"
 
 ratings:
    paths:
-   - "**.js"
+   - "*.js"
