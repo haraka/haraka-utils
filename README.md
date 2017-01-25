@@ -5,6 +5,8 @@
 
 # haraka-utils
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/haraka/haraka-utils.svg)](https://greenkeeper.io/)
+
 General purpose haraka utilities.
 
 ## Usage
