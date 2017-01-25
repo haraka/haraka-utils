@@ -1,11 +1,10 @@
 [![Build Status][ci-img]][ci-url]
 [![Coverage Status][cov-img]][cov-url]
 [![Code Climate][clim-img]][clim-url]
+[![Greenkeeper badge](https://badges.greenkeeper.io/haraka/haraka-utils.svg)](https://greenkeeper.io/)
 
 
 # haraka-utils
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/haraka/haraka-utils.svg)](https://greenkeeper.io/)
 
 General purpose haraka utilities.
 
