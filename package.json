@@ -1,6 +1,6 @@
 {
   "name": "haraka-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Haraka's general purpose utilities",
   "main": "index.js",
   "directories": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint *.js test/*.js",
+    "lintfix": "./node_modules/.bin/eslint --fix *.js test/*.js",
     "test": "./run_tests",
     "cover": "./node_modules/.bin/istanbul cover ./run_tests"
   },
@@ -27,7 +28,8 @@
   },
   "homepage": "https://github.com/haraka/haraka-utils#readme",
   "devDependencies": {
-    "eslint": "^3.10.1",
-    "nodeunit": "^0.11.0"
+    "eslint": "*",
+    "eslint-plugin-haraka": "*",
+    "nodeunit": "*"
   }
 }

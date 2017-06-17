@@ -1,12 +1,12 @@
 
 var utils     = require('../index');
 
-function _set_up(callback) {
+function _set_up (callback) {
     // this.backup = {};
     callback();
 }
 
-function _tear_down(callback) {
+function _tear_down (callback) {
     callback();
 }
 
@@ -135,7 +135,7 @@ exports.encode_qp = {
         test.equals(utils.encode_qp(buffer+"1234=\n"), buffer+"1234=\n=3D\n");
         test.equals(utils.encode_qp(buffer+"12345=\n"), buffer+"12345=\n=3D\n");
         test.equals(
-          utils.encode_qp(buffer+"123456=\n"), buffer+"12345=\n6=3D\n"
+            utils.encode_qp(buffer+"123456=\n"), buffer+"12345=\n6=3D\n"
         );
         test.done();
     },
@@ -266,15 +266,15 @@ exports.to_object = {
     'string': function (test) {
         test.expect(1);
         test.deepEqual(utils.to_object('matt,test'),
-                { matt: true, test: true }
-                );
+            { matt: true, test: true }
+        );
         test.done();
     },
     'array': function (test) {
         test.expect(1);
         test.deepEqual(utils.to_object(['matt','test']),
-                { matt: true, test: true }
-                );
+            { matt: true, test: true }
+        );
         test.done();
     },
 };
@@ -291,8 +291,8 @@ exports.extend = {
         test.deepEqual(
             utils.extend(
                 {first: 'boo'}, {second: 'ger'}, {third: 'eat'}
-                ),
-                {first: 'boo', second: 'ger', third: 'eat'}
+            ),
+            {first: 'boo', second: 'ger', third: 'eat'}
         );
         test.done();
     },

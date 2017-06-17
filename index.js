@@ -78,7 +78,7 @@ exports.extend = function (target) {
 };
 
 exports.ISODate = function (d) {
-    function pad(n) { return n<10 ? '0'+n : n; }
+    function pad (n) { return n<10 ? '0'+n : n; }
     return d.getUTCFullYear()+'-' +
       pad(d.getUTCMonth()+1)+'-' +
       pad(d.getUTCDate())+'T'    +
@@ -157,13 +157,13 @@ function _buf_to_qp (b) {
 exports.encode_qp = function (str) {
     str = Buffer.isBuffer(str) ? _buf_to_qp(str)
         : str.replace(
-        /([^\ \t\n!"#\$%&'()*+,\-.\/0-9:;<>?\@A-Z\[\\\]^_`a-z{|}~])/g,
-        function (orig, p1) {
-            return _char_to_qp(p1);
-        }
-    ).replace(/([ \t]+)$/gm, function (orig, p1) {
-        return p1.split('').map(_char_to_qp).join('');
-    });
+            /([^\ \t\n!"#\$%&'()*+,\-.\/0-9:;<>?\@A-Z\[\\\]^_`a-z{|}~])/g,
+            function (orig, p1) {
+                return _char_to_qp(p1);
+            }
+        ).replace(/([ \t]+)$/gm, function (orig, p1) {
+            return p1.split('').map(_char_to_qp).join('');
+        });
 
     // Now shorten lines to 76 chars, but don't break =XX encodes.
     // Method: iterate over to char 73.
@@ -256,7 +256,7 @@ exports.valid_regexes = function (list, file) {
     return valid;  // returns a list of valid regexes
 };
 
-exports.regexp_escape = function(text) {
+exports.regexp_escape = function (text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
@@ -270,7 +270,7 @@ exports.unbase64 = function (str) {
 
 // Fisher-Yates shuffle
 // http://bost.ocks.org/mike/shuffle/
-exports.shuffle = function(array) {
+exports.shuffle = function (array) {
     var m = array.length;
     var t;
     var i;
