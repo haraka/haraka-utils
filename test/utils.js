@@ -1,5 +1,5 @@
 
-var utils     = require('../index');
+const utils     = require('../index');
 
 function _set_up (callback) {
     // this.backup = {};
@@ -13,13 +13,13 @@ function _tear_down (callback) {
 exports.uuid = {
     'generates a UUID of 36 characters': function (test) {
         test.expect(1);
-        var uuid = utils.uuid();
+        const uuid = utils.uuid();
         test.equal(uuid.length, 36);
         test.done();
     },
     'contains only UUID chars': function (test) {
         test.expect(1);
-        var uuid = utils.uuid();
+        const uuid = utils.uuid();
         test.ok(/[0-9A-Za-z\-]/.test(uuid));
         test.done();
     }
@@ -28,7 +28,7 @@ exports.uuid = {
 exports.uniq = {
     'reduces an ordered array to unique elements': function (test) {
         test.expect(1);
-        var uniq = utils.uniq([1,1,2,2,3]);
+        const uniq = utils.uniq([1,1,2,2,3]);
         test.deepEqual(uniq, [1,2,3]);
         test.done();
     },
@@ -93,7 +93,7 @@ exports.encode_qp = {
         test.done();
     },
     "Don't break a line that's near but not over 76 chars" : function (test) {
-        var buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                      "xxxxxxxxxxxxxxxxxx";
         test.equals(utils.encode_qp(buffer+"123"), buffer+"123");
         test.equals(utils.encode_qp(buffer+"1234"), buffer+"1234");
@@ -113,7 +113,7 @@ exports.encode_qp = {
     },
     'Not allowed to break =XX escapes using soft line break' : function (test) {
         test.expect(10);
-        var buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                      "xxxxxxxxxxxxxxxxxx";
         test.equals(
             utils.encode_qp(buffer+"===xxxxx"), buffer+"=3D=\n=3D=3Dxxxxx"
@@ -141,7 +141,7 @@ exports.encode_qp = {
     },
     'some extra special cases we have had problems with' : function (test) {
         test.expect(2);
-        var buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                      "xxxxxxxxxxxxxxxxxx";
         test.equals(utils.encode_qp(buffer+"12=x=x"), buffer+"12=3D=\nx=3Dx");
         test.equals(
@@ -211,9 +211,9 @@ exports.encode_qp = {
         test.done();
     },
     'spin encode_qp()' : function (test) {
-        var spin = 10000;
+        const spin = 10000;
         test.expect(spin);
-        for (var i = 0; i < spin; i++) {
+        for (let i = 0; i < spin; i++) {
             test.equals(
                 utils.encode_qp("quoted printable"), "quoted printable"
             );
@@ -226,19 +226,19 @@ exports.valid_regexes = {
     setUp : _set_up,
     tearDown : _tear_down,
     'two valid': function (test) {
-        var re_list = ['.*\.exam.ple','.*\.example.com'];
+        const re_list = ['.*\.exam.ple','.*\.example.com'];
         test.expect(1);
         test.deepEqual(re_list, utils.valid_regexes(re_list));
         test.done();
     },
     'one valid, one invalid': function (test) {
-        var re_list = ['*\.exam.ple','.*\.example.com'];
+        const re_list = ['*\.exam.ple','.*\.example.com'];
         test.expect(1);
         test.deepEqual(['.*\.example.com'], utils.valid_regexes(re_list));
         test.done();
     },
     'one valid, two invalid': function (test) {
-        var re_list = ['[', '*\.exam.ple','.*\.example.com'];
+        const re_list = ['[', '*\.exam.ple','.*\.example.com'];
         test.expect(1);
         test.deepEqual(['.*\.example.com'], utils.valid_regexes(re_list));
         test.done();
@@ -282,7 +282,7 @@ exports.to_object = {
 exports.extend = {
     'copies properties from one object': function (test) {
         test.expect(1);
-        var both = utils.extend({first: 'boo'}, {second: 'ger'});
+        const both = utils.extend({first: 'boo'}, {second: 'ger'});
         test.deepEqual({first: 'boo', second: 'ger'}, both);
         test.done();
     },
@@ -322,42 +322,42 @@ exports.node_min = {
 exports.elapsed = {
     'returns 0 decimal places': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 3517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start, 0), '4');
         test.done();
     },
     'returns 1 decimal place': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 3517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start, 1), '3.5');
         test.done();
     },
     'returns 2 decimal places': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 3517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start, 2), '3.52');
         test.done();
     },
     'default N > 5 has 0 decimal places': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 13517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start), '14');
         test.done();
     },
     'default N > 2 has 1 decimal places': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 3517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start), '3.5');
         test.done();
     },
     'default has 2 decimal places': function (test) {
         test.expect(1);
-        var start = new Date();
+        const start = new Date();
         start.setTime(start.getTime() - 1517);   // 3.517 seconds ago
         test.strictEqual(utils.elapsed(start), '1.52');
         test.done();

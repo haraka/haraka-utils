@@ -1,15 +1,15 @@
 'use strict';
 
 // copied from http://www.broofa.com/Tools/Math.uuid.js
-var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     .split('');
 
 exports.uuid = function () {
-    var chars = CHARS;
-    var uuid = new Array(36);
-    var rnd=0;
-    var r;
-    for (var i = 0; i < 36; i++) {
+    const chars = CHARS;
+    const uuid = new Array(36);
+    let rnd=0;
+    let r;
+    for (let i = 0; i < 36; i++) {
         if (i===8 || i===13 || i===18 || i===23) {
             uuid[i] = '-';
         }
@@ -39,8 +39,8 @@ exports.to_object = function (array) {
     if (!Array.isArray(array)) {
         throw "arguments to to_object must be a string or array";
     }
-    var rv = {};
-    for (var i = 0; i < array.length; i++) {
+    const rv = {};
+    for (let i = 0; i < array.length; i++) {
         if (array[i] === undefined) { continue; }
         rv[array[i]] = true;
     }
@@ -52,9 +52,9 @@ exports.sort_keys = function (obj) {
 };
 
 exports.uniq = function (arr) {
-    var out = [];
-    var o = 0;
-    for (var i=0,l=arr.length; i < l; i++) {
+    const out = [];
+    let o = 0;
+    for (let i=0,l=arr.length; i < l; i++) {
         if (out.length === 0) {
             out.push(arr[i]);
         }
@@ -68,9 +68,9 @@ exports.uniq = function (arr) {
 
 exports.extend = function (target) {
     // http://stackoverflow.com/questions/14974864/
-    var sources = [].slice.call(arguments, 1);
+    const sources = [].slice.call(arguments, 1);
     sources.forEach(function (source) {
-        for (var prop in source) {
+        for (const prop in source) {
             target[prop] = source[prop];
         }
     });
@@ -87,14 +87,14 @@ exports.ISODate = function (d) {
       pad(d.getUTCSeconds())+'Z' ;
 };
 
-var _daynames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-var _monnames = [
+const _daynames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const _monnames = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
 function _pad (num, n, p) {
-    var s = '' + num;
+    let s = '' + num;
     p = p || '0';
     while (s.length < n) s = p + s;
     return s;
@@ -117,9 +117,9 @@ exports.decode_qp = function (line) {
         return new Buffer(line);
     }
     line = line.replace(/=\n/mg, '');
-    var buf = new Buffer(line.length);
-    var pos = 0;
-    for (var i=0,l=line.length; i < l; i++) {
+    const buf = new Buffer(line.length);
+    let pos = 0;
+    for (let i=0,l=line.length; i < l; i++) {
         if (line[i] === '=' &&
             /=[0-9a-fA-F]{2}/.test(line[i] + line[i+1] + line[i+2])) {
             i++;
@@ -135,13 +135,13 @@ exports.decode_qp = function (line) {
 };
 
 function _char_to_qp (ch) {
-    var b = new Buffer(ch);
+    const b = new Buffer(ch);
     return _buf_to_qp(b);
 }
 
 function _buf_to_qp (b) {
-    var r = '';
-    for (var i=0; i<b.length; i++) {
+    let r = '';
+    for (let i=0; i<b.length; i++) {
         if ((b[i] != 61) && ((b[i] > 32 && b[i] <= 126) || b[i] == 10 || b[i] == 13)) {
             // printable range
             r = r + String.fromCharCode(b[i]);
@@ -169,9 +169,9 @@ exports.encode_qp = function (str) {
     // Method: iterate over to char 73.
     //   If char 74, 75 or 76 is = we need to break before the =.
     //   Otherwise break at 76.
-    var cur_length = 0;
-    var out = '';
-    for (var i=0; i<str.length; i++) {
+    let cur_length = 0;
+    let out = '';
+    for (let i=0; i<str.length; i++) {
         if (str[i] === '\n') {
             out += '\n';
             cur_length = 0;
@@ -209,10 +209,10 @@ exports.encode_qp = function (str) {
 };
 
 exports.node_min = function (min, cur) {
-    var wants = min.split('.');
-    var has = (cur || process.version.substring(1)).split('.');
+    const wants = min.split('.');
+    const has = (cur || process.version.substring(1)).split('.');
 
-    for (var i=0; i<=3; i++) {
+    for (let i=0; i<=3; i++) {
         // note use of unary + for fast type conversion to num
         if (+has[i] > +wants[i]) { return true;  }
         if (+has[i] < +wants[i]) { return false; }
@@ -226,7 +226,7 @@ exports.existsSync =
     require(exports.node_min('0.8') ? 'fs' : 'path').existsSync;
 
 exports.indexOfLF = function (buf, maxlength) {
-    for (var i=0; i<buf.length; i++) {
+    for (let i=0; i<buf.length; i++) {
         if (maxlength && (i === maxlength)) break;
         if (buf[i] === 0x0a) return i;
     }
@@ -235,15 +235,15 @@ exports.indexOfLF = function (buf, maxlength) {
 
 exports.prettySize = function (size) {
     if (size === 0 || !size) return 0;
-    var i = Math.floor(Math.log(size)/Math.log(1024));
-    var units = ['B', 'kB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(size)/Math.log(1024));
+    const units = ['B', 'kB', 'MB', 'GB', 'TB'];
     return (size/Math.pow(1024,i)).toFixed(2) * 1 + '' + units[i];
 };
 
 exports.valid_regexes = function (list, file) {
     // list: an array of regexes. file: the file name containing the regex list
-    var valid = [];
-    for (var i=0; i<list.length; i++) {
+    const valid = [];
+    for (let i=0; i<list.length; i++) {
         try {
             new RegExp(list[i]);
         }
@@ -271,9 +271,9 @@ exports.unbase64 = function (str) {
 // Fisher-Yates shuffle
 // http://bost.ocks.org/mike/shuffle/
 exports.shuffle = function (array) {
-    var m = array.length;
-    var t;
-    var i;
+    let m = array.length;
+    let t;
+    let i;
 
     // While there remain elements to shuffle…
     while (m) {
@@ -290,7 +290,7 @@ exports.shuffle = function (array) {
 };
 
 exports.elapsed = function (start, decimal_places) {
-    var diff = (Date.now() - start) / 1000;  // in seconds
+    const diff = (Date.now() - start) / 1000;  // in seconds
 
     if (decimal_places === undefined) {
         decimal_places = diff > 5 ? 0 : diff > 2 ? 1 : 2;
