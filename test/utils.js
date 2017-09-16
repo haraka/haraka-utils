@@ -20,7 +20,7 @@ exports.uuid = {
     'contains only UUID chars': function (test) {
         test.expect(1);
         const uuid = utils.uuid();
-        test.ok(/[0-9A-Za-z\-]/.test(uuid));
+        test.ok(/[0-9A-Za-z-]/.test(uuid));
         test.done();
     }
 }
@@ -226,21 +226,21 @@ exports.valid_regexes = {
     setUp : _set_up,
     tearDown : _tear_down,
     'two valid': function (test) {
-        const re_list = ['.*\.exam.ple','.*\.example.com'];
+        const re_list = ['.*.exam.ple','.*.example.com'];
         test.expect(1);
         test.deepEqual(re_list, utils.valid_regexes(re_list));
         test.done();
     },
     'one valid, one invalid': function (test) {
-        const re_list = ['*\.exam.ple','.*\.example.com'];
+        const re_list = ['*.exam.ple','.*.example.com'];
         test.expect(1);
-        test.deepEqual(['.*\.example.com'], utils.valid_regexes(re_list));
+        test.deepEqual(['.*.example.com'], utils.valid_regexes(re_list));
         test.done();
     },
     'one valid, two invalid': function (test) {
-        const re_list = ['[', '*\.exam.ple','.*\.example.com'];
+        const re_list = ['[', '*.exam.ple','.*.example.com'];
         test.expect(1);
-        test.deepEqual(['.*\.example.com'], utils.valid_regexes(re_list));
+        test.deepEqual(['.*.example.com'], utils.valid_regexes(re_list));
         test.done();
     },
 };
