@@ -157,8 +157,8 @@ function _buf_to_qp (b) {
 exports.encode_qp = function (str) {
     str = Buffer.isBuffer(str) ? _buf_to_qp(str)
         : str.replace(
-            /([^\ \t\n!"#\$%&'()*+,\-.\/0-9:;<>?\@A-Z\[\\\]^_`a-z{|}~])/g,
-            function (orig, p1) {
+            /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g,
+            (orig, p1) => {
                 return _char_to_qp(p1);
             }
         ).replace(/([ \t]+)$/gm, function (orig, p1) {
@@ -306,7 +306,7 @@ exports.elapsed = function (start, decimal_places) {
 
 exports.wildcard_to_regexp = function (str) {
     return str
-        .replace(/[-\[\]\/{}()*+?.,\\^$|#\s]/g, "\\$&")
+        .replace(/[-[\]/{}()*+?.,\\^$|#\s]/g, "\\$&")
         .replace('\\*', '.*')
         .replace('\\?', '.') + '$';
 };
