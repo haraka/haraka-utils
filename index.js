@@ -236,7 +236,9 @@ exports.indexOfLF = function (buf, maxlength) {
 exports.prettySize = function (size) {
     if (size === 0 || !size) return 0;
     const i = Math.floor(Math.log(size)/Math.log(1024));
-    const units = ['B', 'kB', 'MB', 'GB', 'TB'];
+    // https://wikipedia.org/wiki/Binary_prefix units with 1024 base
+    // should use binary prefix
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
     return (size/Math.pow(1024,i)).toFixed(2) * 1 + '' + units[i];
 };
 
