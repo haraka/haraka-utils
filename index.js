@@ -78,13 +78,13 @@ exports.extend = function (target) {
 };
 
 exports.ISODate = function (d) {
-    function pad (n) { return n<10 ? '0'+n : n; }
-    return d.getUTCFullYear()+'-' +
-      pad(d.getUTCMonth()+1)+'-' +
-      pad(d.getUTCDate())+'T'    +
-      pad(d.getUTCHours())+':'   +
-      pad(d.getUTCMinutes())+':' +
-      pad(d.getUTCSeconds())+'Z' ;
+    function pad (n) { return n<10 ? `0${n}` : n; }
+    return `${d.getUTCFullYear()}-\
+${pad(d.getUTCMonth()+1)}-\
+${pad(d.getUTCDate())}T\
+${pad(d.getUTCHours())}:\
+${pad(d.getUTCMinutes())}:\
+${pad(d.getUTCSeconds())}Z`;
 };
 
 const _daynames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -94,20 +94,20 @@ const _monnames = [
 ];
 
 function _pad (num, n, p) {
-    let s = '' + num;
+    let s = `${num}`;
     p = p || '0';
-    while (s.length < n) s = p + s;
+    while (s.length < n) s = `${p}${s}`;
     return s;
 }
 
 exports.pad = _pad;
 
 exports.date_to_str = function (d) {
-    return _daynames[d.getDay()] + ', ' + _pad(d.getDate(),2) + ' ' +
-           _monnames[d.getMonth()] + ' ' + d.getFullYear() + ' ' +
-           _pad(d.getHours(),2) + ':' + _pad(d.getMinutes(),2) + ':' +
-           _pad(d.getSeconds(),2) +
-           ' ' + d.toString().match(/\sGMT([+-]\d+)/)[1];
+    return `${_daynames[d.getDay()]}, ${_pad(d.getDate(),2)} \
+${_monnames[d.getMonth()]} ${d.getFullYear()} \
+${_pad(d.getHours(),2)}:${_pad(d.getMinutes(),2)}:\
+${_pad(d.getSeconds(),2)} \
+${d.toString().match(/\sGMT([+-]\d+)/)[1]}`;
 };
 
 exports.decode_qp = function (line) {
@@ -121,9 +121,9 @@ exports.decode_qp = function (line) {
     let pos = 0;
     for (let i=0,l=line.length; i < l; i++) {
         if (line[i] === '=' &&
-            /=[0-9a-fA-F]{2}/.test(line[i] + line[i+1] + line[i+2])) {
+            /=[0-9a-fA-F]{2}/.test(`${line[i]}${line[i+1]}${line[i+2]}`)) {
             i++;
-            buf[pos] = parseInt(line[i] + line[i+1], 16);
+            buf[pos] = parseInt(`${line[i]}${line[i+1]}`, 16);
             i++;
         }
         else {
@@ -144,10 +144,10 @@ function _buf_to_qp (b) {
     for (let i=0; i<b.length; i++) {
         if ((b[i] != 61) && ((b[i] > 32 && b[i] <= 126) || b[i] == 10 || b[i] == 13)) {
             // printable range
-            r = r + String.fromCharCode(b[i]);
+            r = `${r}${String.fromCharCode(b[i])}`;
         }
         else {
-            r = r + '=' + _pad(b[i].toString(16).toUpperCase(), 2);
+            r = `${r}=${_pad(b[i].toString(16).toUpperCase(), 2)}`;
         }
     }
     return r;
@@ -173,22 +173,22 @@ exports.encode_qp = function (str) {
     let out = '';
     for (let i=0; i<str.length; i++) {
         if (str[i] === '\n') {
-            out += '\n';
+            out = `${out}\n`;
             cur_length = 0;
             continue;
         }
 
         cur_length++;
         if (cur_length <= 73) {
-            out += str[i];
+            out = `${out}${str[i]}`;
         }
         else if (cur_length > 73 && cur_length < 76) {
             if (str[i] === '=') {
-                out += '=\n=';
+                out = `${out}=\n=`;
                 cur_length = 1;
             }
             else {
-                out += str[i];
+                out = `${out}${str[i]}`;
             }
         }
         else {
@@ -196,10 +196,10 @@ exports.encode_qp = function (str) {
 
             // Don't insert '=\n' if end of string or next char is already \n:
             if ((i === (str.length - 1)) || (str[i+1] === '\n')) {
-                out += str[i];
+                out = `${out}${str[i]}`;
             }
             else {
-                out += '=\n' + str[i];
+                out = `${out}=\n${str[i]}`;
                 cur_length = 1;
             }
         }
@@ -239,7 +239,7 @@ exports.prettySize = function (size) {
     // https://wikipedia.org/wiki/Binary_prefix units with 1024 base
     // should use binary prefix
     const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
-    return (size/Math.pow(1024,i)).toFixed(2) * 1 + '' + units[i];
+    return `${(size/Math.pow(1024,i)).toFixed(2) * 1}${units[i]}`;
 };
 
 exports.valid_regexes = function (list, file) {
@@ -250,7 +250,7 @@ exports.valid_regexes = function (list, file) {
             new RegExp(list[i]);
         }
         catch (e) {
-            console.error("invalid regex in " + file + ", " + list[i]);
+            console.error(`invalid regex in ${file}, ${list[i]}`);
             continue;
         }
         valid.push(list[i]);
@@ -307,10 +307,10 @@ exports.elapsed = function (start, decimal_places) {
 };
 
 exports.wildcard_to_regexp = function (str) {
-    return str
+    return `${str
         .replace(/[-[\]/{}()*+?.,\\^$|#\s]/g, "\\$&")
         .replace('\\*', '.*')
-        .replace('\\?', '.') + '$';
+        .replace('\\?', '.')}$`;
 };
 
 exports.line_regexp = /^([^\n]*\n)/;
