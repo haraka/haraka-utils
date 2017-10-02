@@ -93,60 +93,60 @@ exports.encode_qp = {
         test.done();
     },
     "Don't break a line that's near but not over 76 chars" : function (test) {
-        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                     "xxxxxxxxxxxxxxxxxx";
-        test.equals(utils.encode_qp(buffer+"123"), buffer+"123");
-        test.equals(utils.encode_qp(buffer+"1234"), buffer+"1234");
-        test.equals(utils.encode_qp(buffer+"12345"), buffer+"12345");
-        test.equals(utils.encode_qp(buffer+"123456"), buffer+"123456");
-        test.equals(utils.encode_qp(buffer+"1234567"), buffer+"12345=\n67");
-        test.equals(utils.encode_qp(buffer+"123456="), buffer+"12345=\n6=3D");
-        test.equals(utils.encode_qp(buffer+"123\n"), buffer+"123\n");
-        test.equals(utils.encode_qp(buffer+"1234\n"), buffer+"1234\n");
-        test.equals(utils.encode_qp(buffer+"12345\n"), buffer+"12345\n");
-        test.equals(utils.encode_qp(buffer+"123456\n"), buffer+"123456\n");
-        test.equals(utils.encode_qp(buffer+"1234567\n"), buffer+"12345=\n67\n");
+        const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
+xxxxxxxxxxxxxxxxxx`;
+        test.equals(utils.encode_qp(`${buffer}123`), `${buffer}123`);
+        test.equals(utils.encode_qp(`${buffer}1234`), `${buffer}1234`);
+        test.equals(utils.encode_qp(`${buffer}12345`), `${buffer}12345`);
+        test.equals(utils.encode_qp(`${buffer}123456`), `${buffer}123456`);
+        test.equals(utils.encode_qp(`${buffer}1234567`), `${buffer}12345=\n67`);
+        test.equals(utils.encode_qp(`${buffer}123456=`), `${buffer}12345=\n6=3D`);
+        test.equals(utils.encode_qp(`${buffer}123\n`), `${buffer}123\n`);
+        test.equals(utils.encode_qp(`${buffer}1234\n`), `${buffer}1234\n`);
+        test.equals(utils.encode_qp(`${buffer}12345\n`), `${buffer}12345\n`);
+        test.equals(utils.encode_qp(`${buffer}123456\n`), `${buffer}123456\n`);
+        test.equals(utils.encode_qp(`${buffer}1234567\n`), `${buffer}12345=\n67\n`);
         test.equals(
-            utils.encode_qp(buffer+"123456=\n"), buffer+"12345=\n6=3D\n"
+            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
         );
         test.done();
     },
     'Not allowed to break =XX escapes using soft line break' : function (test) {
         test.expect(10);
-        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                     "xxxxxxxxxxxxxxxxxx";
+        const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
+xxxxxxxxxxxxxxxxxx`;
         test.equals(
-            utils.encode_qp(buffer+"===xxxxx"), buffer+"=3D=\n=3D=3Dxxxxx"
+            utils.encode_qp(`${buffer}===xxxxx`), `${buffer}=3D=\n=3D=3Dxxxxx`
         );
         test.equals(
-            utils.encode_qp(buffer+"1===xxxx"), buffer+"1=3D=\n=3D=3Dxxxx"
+            utils.encode_qp(`${buffer}1===xxxx`), `${buffer}1=3D=\n=3D=3Dxxxx`
         );
         test.equals(
-            utils.encode_qp(buffer+"12===xxx"), buffer+"12=3D=\n=3D=3Dxxx"
+            utils.encode_qp(`${buffer}12===xxx`), `${buffer}12=3D=\n=3D=3Dxxx`
         );
         test.equals(
-            utils.encode_qp(buffer+"123===xx"), buffer+"123=\n=3D=3D=3Dxx"
+            utils.encode_qp(`${buffer}123===xx`), `${buffer}123=\n=3D=3D=3Dxx`
         );
         test.equals(
-            utils.encode_qp(buffer+"1234===x"), buffer+"1234=\n=3D=3D=3Dx"
+            utils.encode_qp(`${buffer}1234===x`), `${buffer}1234=\n=3D=3D=3Dx`
         );
-        test.equals(utils.encode_qp(buffer+"12=\n"), buffer+"12=3D\n");
-        test.equals(utils.encode_qp(buffer+"123=\n"), buffer+"123=\n=3D\n");
-        test.equals(utils.encode_qp(buffer+"1234=\n"), buffer+"1234=\n=3D\n");
-        test.equals(utils.encode_qp(buffer+"12345=\n"), buffer+"12345=\n=3D\n");
+        test.equals(utils.encode_qp(`${buffer}12=\n`), `${buffer}12=3D\n`);
+        test.equals(utils.encode_qp(`${buffer}123=\n`), `${buffer}123=\n=3D\n`);
+        test.equals(utils.encode_qp(`${buffer}1234=\n`), `${buffer}1234=\n=3D\n`);
+        test.equals(utils.encode_qp(`${buffer}12345=\n`), `${buffer}12345=\n=3D\n`);
         test.equals(
-            utils.encode_qp(buffer+"123456=\n"), buffer+"12345=\n6=3D\n"
+            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
         );
         test.done();
     },
     'some extra special cases we have had problems with' : function (test) {
         test.expect(2);
-        const buffer = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                     "xxxxxxxxxxxxxxxxxx";
-        test.equals(utils.encode_qp(buffer+"12=x=x"), buffer+"12=3D=\nx=3Dx");
+        const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
+xxxxxxxxxxxxxxxxxx`;
+        test.equals(utils.encode_qp(`${buffer}12=x=x`), `${buffer}12=3D=\nx=3Dx`);
         test.equals(
-            utils.encode_qp(buffer+"12345"+buffer+"12345"+buffer+"123456\n"),
-            buffer+"12345=\n"+buffer+"12345=\n"+buffer+"123456\n"
+            utils.encode_qp(`${buffer}12345${buffer}12345${buffer}123456\n`),
+            `${buffer}12345=\n${buffer}12345=\n${buffer}123456\n`
         );
         test.done();
     },
@@ -365,24 +365,26 @@ exports.elapsed = {
 };
 
 exports.prettySize = {
-    'formats into 1024 sized kB': function (test) {
+    // https://wikipedia.org/wiki/Binary_prefix units with 1024 base
+    // should use binary prefix
+    'formats into 1024 sized KiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000), '9.77kB');
+        test.equal(utils.prettySize(10000), '9.77KiB');
         test.done();
     },
-    'formats into 1024 sized MB': function (test) {
+    'formats into 1024 sized MiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000), '9.54MB');
+        test.equal(utils.prettySize(10000000), '9.54MiB');
         test.done();
     },
-    'formats into 1024 sized GB': function (test) {
+    'formats into 1024 sized GiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000000), '9.31GB');
+        test.equal(utils.prettySize(10000000000), '9.31GiB');
         test.done();
     },
-    'formats into 1024 sized TB': function (test) {
+    'formats into 1024 sized TiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000000000), '9.09TB');
+        test.equal(utils.prettySize(10000000000000), '9.09TiB');
         test.done();
     },
 }
