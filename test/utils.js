@@ -365,24 +365,26 @@ exports.elapsed = {
 };
 
 exports.prettySize = {
-    'formats into 1024 sized kB': function (test) {
+    // https://wikipedia.org/wiki/Binary_prefix units with 1024 base
+    // should use binary prefix
+    'formats into 1024 sized KiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000), '9.77kB');
+        test.equal(utils.prettySize(10000), '9.77KiB');
         test.done();
     },
-    'formats into 1024 sized MB': function (test) {
+    'formats into 1024 sized MiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000), '9.54MB');
+        test.equal(utils.prettySize(10000000), '9.54MiB');
         test.done();
     },
-    'formats into 1024 sized GB': function (test) {
+    'formats into 1024 sized GiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000000), '9.31GB');
+        test.equal(utils.prettySize(10000000000), '9.31GiB');
         test.done();
     },
-    'formats into 1024 sized TB': function (test) {
+    'formats into 1024 sized TiB': function (test) {
         test.expect(1);
-        test.equal(utils.prettySize(10000000000000), '9.09TB');
+        test.equal(utils.prettySize(10000000000000), '9.09TiB');
         test.done();
     },
 }
