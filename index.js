@@ -24,13 +24,13 @@ exports.uuid = function () {
         }
     }
     return uuid.join('');
-};
+}
 
 exports.in_array = function (item, array) {
     if (!array) return false;
     if (!Array.isArray(array)) return false;
     return (array.indexOf(item) !== -1);
-};
+}
 
 exports.to_object = function (array) {
     if (typeof array === 'string') {
@@ -45,11 +45,11 @@ exports.to_object = function (array) {
         rv[array[i]] = true;
     }
     return rv;
-};
+}
 
 exports.sort_keys = function (obj) {
     return Object.keys(obj).sort();
-};
+}
 
 exports.uniq = function (arr) {
     const out = [];
@@ -64,7 +64,7 @@ exports.uniq = function (arr) {
         }
     }
     return out;
-};
+}
 
 exports.extend = function (target) {
     // http://stackoverflow.com/questions/14974864/
@@ -75,7 +75,7 @@ exports.extend = function (target) {
         }
     });
     return target;
-};
+}
 
 exports.ISODate = function (d) {
     function pad (n) { return n<10 ? `0${n}` : n; }
@@ -85,7 +85,7 @@ ${pad(d.getUTCDate())}T\
 ${pad(d.getUTCHours())}:\
 ${pad(d.getUTCMinutes())}:\
 ${pad(d.getUTCSeconds())}Z`;
-};
+}
 
 const _daynames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const _monnames = [
@@ -108,7 +108,7 @@ ${_monnames[d.getMonth()]} ${d.getFullYear()} \
 ${_pad(d.getHours(),2)}:${_pad(d.getMinutes(),2)}:\
 ${_pad(d.getSeconds(),2)} \
 ${d.toString().match(/\sGMT([+-]\d+)/)[1]}`;
-};
+}
 
 exports.decode_qp = function (line) {
     line = line.replace(/\r\n/g,"\n").replace(/[ \t]+\r?\n/g,"\n");
@@ -132,7 +132,7 @@ exports.decode_qp = function (line) {
         pos++;
     }
     return buf.slice(0, pos);
-};
+}
 
 function _char_to_qp (ch) {
     const b = new Buffer(ch);
@@ -206,7 +206,7 @@ exports.encode_qp = function (str) {
     }
 
     return out;
-};
+}
 
 exports.node_min = function (min, cur) {
     const wants = min.split('.');
@@ -220,7 +220,7 @@ exports.node_min = function (min, cur) {
 
     // they're identical
     return true;
-};
+}
 
 exports.existsSync =
     require(exports.node_min('0.8') ? 'fs' : 'path').existsSync;
@@ -231,7 +231,7 @@ exports.indexOfLF = function (buf, maxlength) {
         if (buf[i] === 0x0a) return i;
     }
     return -1;
-};
+}
 
 exports.prettySize = function (size) {
     if (size === 0 || !size) return 0;
@@ -240,7 +240,7 @@ exports.prettySize = function (size) {
     // should use binary prefix
     const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
     return `${(size/Math.pow(1024,i)).toFixed(2) * 1}${units[i]}`;
-};
+}
 
 exports.valid_regexes = function (list, file) {
     // list: an array of regexes. file: the file name containing the regex list
@@ -256,19 +256,19 @@ exports.valid_regexes = function (list, file) {
         valid.push(list[i]);
     }
     return valid;  // returns a list of valid regexes
-};
+}
 
 exports.regexp_escape = function (text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
+}
 
 exports.base64 = function (str) {
     return new Buffer(str, "UTF-8").toString("base64");
-};
+}
 
 exports.unbase64 = function (str) {
     return new Buffer(str, "base64").toString("UTF-8");
-};
+}
 
 // Fisher-Yates shuffle
 // http://bost.ocks.org/mike/shuffle/
@@ -289,7 +289,7 @@ exports.shuffle = function (array) {
     }
 
     return array;
-};
+}
 
 exports.elapsed = function (start, decimal_places) {
     const diff = (Date.now() - start) / 1000;  // in seconds
@@ -304,13 +304,13 @@ exports.elapsed = function (start, decimal_places) {
         }
     }
     return diff.toFixed(decimal_places);
-};
+}
 
 exports.wildcard_to_regexp = function (str) {
     return `${str
         .replace(/[-[\]/{}()*+?.,\\^$|#\s]/g, "\\$&")
         .replace('\\*', '.*')
         .replace('\\?', '.')}$`;
-};
+}
 
 exports.line_regexp = /^([^\n]*\n)/;
