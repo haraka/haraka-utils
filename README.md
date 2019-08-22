@@ -11,7 +11,7 @@ General purpose haraka utilities.
 ## Usage
 
 ```js
-var utils = require('haraka-utils');
+const utils = require('haraka-utils');
 ```
 
 
