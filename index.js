@@ -114,10 +114,10 @@ exports.decode_qp = function (line) {
     line = line.replace(/\r\n/g,"\n").replace(/[ \t]+\r?\n/g,"\n");
     if (! /=/.test(line)) {
         // this may be a pointless optimisation...
-        return new Buffer(line);
+        return Buffer.from(line);
     }
     line = line.replace(/=\n/mg, '');
-    const buf = new Buffer(line.length);
+    const buf = Buffer.alloc(line.length);
     let pos = 0;
     for (let i=0,l=line.length; i < l; i++) {
         if (line[i] === '=' &&
@@ -135,16 +135,14 @@ exports.decode_qp = function (line) {
 }
 
 function _char_to_qp (ch) {
-    const b = new Buffer(ch);
-    return _buf_to_qp(b);
+    return _buf_to_qp(Buffer.from(ch));
 }
 
 function _buf_to_qp (b) {
     let r = '';
     for (let i=0; i<b.length; i++) {
         if ((b[i] != 61) && ((b[i] > 32 && b[i] <= 126) || b[i] == 10 || b[i] == 13)) {
-            // printable range
-            r = `${r}${String.fromCharCode(b[i])}`;
+            r = `${r}${String.fromCharCode(b[i])}`;  // printable range
         }
         else {
             r = `${r}=${_pad(b[i].toString(16).toUpperCase(), 2)}`;
@@ -154,16 +152,16 @@ function _buf_to_qp (b) {
 }
 
 // Shameless attempt to copy from Perl's MIME::QuotedPrint::Perl code.
-exports.encode_qp = function (str) {
-    str = Buffer.isBuffer(str) ? _buf_to_qp(str)
-        : str.replace(
-            /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g,
-            (orig, p1) => {
-                return _char_to_qp(p1);
-            }
-        ).replace(/([ \t]+)$/gm, function (orig, p1) {
-            return p1.split('').map(_char_to_qp).join('');
-        });
+
+exports.encode_qp = (str) => {
+    str = Buffer.isBuffer(str) ? _buf_to_qp(str) : str.replace(
+        /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g,
+        (orig, p1) => {
+            return _char_to_qp(p1);
+        }
+    ).replace(/([ \t]+)$/gm, (orig, p1) => {
+        return p1.split('').map(_char_to_qp).join('');
+    });
 
     // Now shorten lines to 76 chars, but don't break =XX encodes.
     // Method: iterate over to char 73.
@@ -263,11 +261,11 @@ exports.regexp_escape = function (text) {
 }
 
 exports.base64 = function (str) {
-    return new Buffer(str, "UTF-8").toString("base64");
+    return Buffer.from(str, 'UTF-8').toString('base64');
 }
 
 exports.unbase64 = function (str) {
-    return new Buffer(str, "base64").toString("UTF-8");
+    return Buffer.from(str, 'base64').toString('UTF-8');
 }
 
 // Fisher-Yates shuffle
