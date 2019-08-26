@@ -112,10 +112,8 @@ ${d.toString().match(/\sGMT([+-]\d+)/)[1]}`;
 
 exports.decode_qp = function (line) {
     line = line.replace(/\r\n/g,"\n").replace(/[ \t]+\r?\n/g,"\n");
-    if (! /=/.test(line)) {
-        // this may be a pointless optimisation...
-        return Buffer.from(line);
-    }
+    if (! /=/.test(line)) return Buffer.from(line); // maybe a pointless optimisation
+
     line = line.replace(/=\n/mg, '');
     const buf = Buffer.alloc(line.length);
     let pos = 0;
@@ -138,11 +136,24 @@ function _char_to_qp (ch) {
     return _buf_to_qp(Buffer.from(ch));
 }
 
+function _is_printable (charCode) {
+    switch (charCode) {
+        case 61:  // = (special in encoded words)
+            return false;
+        case 13:  // CR
+        case 10:  // LF
+            return true;
+    }
+    // much faster than a compound switch
+    if (charCode > 32 && charCode <= 126) return true;
+    return false;
+}
+
 function _buf_to_qp (b) {
     let r = '';
     for (let i=0; i<b.length; i++) {
-        if ((b[i] != 61) && ((b[i] > 32 && b[i] <= 126) || b[i] == 10 || b[i] == 13)) {
-            r = `${r}${String.fromCharCode(b[i])}`;  // printable range
+        if (_is_printable(b[i])) {
+            r = `${r}${String.fromCharCode(b[i])}`;
         }
         else {
             r = `${r}=${_pad(b[i].toString(16).toUpperCase(), 2)}`;
@@ -152,16 +163,17 @@ function _buf_to_qp (b) {
 }
 
 // Shameless attempt to copy from Perl's MIME::QuotedPrint::Perl code.
+const qpRe = /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g;
+function asQuotedPrintable (str) {
+    if (Buffer.isBuffer(str)) return _buf_to_qp(str);
+
+    return str
+        .replace(qpRe, (orig, p1) => { return _char_to_qp(p1); })
+        .replace(/([ \t]+)$/gm, (orig, p1) => { return p1.split('').map(_char_to_qp).join(''); });
+}
 
 exports.encode_qp = (str) => {
-    str = Buffer.isBuffer(str) ? _buf_to_qp(str) : str.replace(
-        /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g,
-        (orig, p1) => {
-            return _char_to_qp(p1);
-        }
-    ).replace(/([ \t]+)$/gm, (orig, p1) => {
-        return p1.split('').map(_char_to_qp).join('');
-    });
+    str = asQuotedPrintable(str);
 
     // Now shorten lines to 76 chars, but don't break =XX encodes.
     // Method: iterate over to char 73.
