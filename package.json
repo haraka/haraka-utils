@@ -1,7 +1,7 @@
 {
   "name": "haraka-utils",
-  "version": "1.0.1",
-  "description": "Haraka's general purpose utilities",
+  "version": "1.0.2",
+  "description": "Haraka general purpose functions",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -21,7 +21,7 @@
     "utility",
     "utilities"
   ],
-  "author": "Haraka Team <harakateam@gmail.com>",
+  "author": "Haraka Team <haraka.mail@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/haraka/haraka-utils/issues"
