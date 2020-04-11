@@ -1,7 +1,7 @@
-[![Build Status][ci-img]][ci-url]
+![CI Tests](https://github.com/haraka/haraka-utils/workflows/CI%20Tests/badge.svg)
+![CI Tests - Windows](https://github.com/haraka/haraka-utils/workflows/CI%20Tests%20-%20Windows/badge.svg)
 [![Coverage Status][cov-img]][cov-url]
 [![Code Climate][clim-img]][clim-url]
-
 
 
 # haraka-utils
@@ -21,8 +21,6 @@ const utils = require('haraka-utils');
 - haraka-net-utils
 
 
-[ci-img]: https://travis-ci.org/haraka/haraka-utils.svg?branch=master
-[ci-url]: https://travis-ci.org/haraka/haraka-utils
 [cov-img]: https://codecov.io/github/haraka/haraka-utils/coverage.svg
 [cov-url]: https://codecov.io/github/haraka/haraka-utils?branch=master
 [clim-img]: https://codeclimate.com/github/haraka/haraka-utils/badges/gpa.svg
