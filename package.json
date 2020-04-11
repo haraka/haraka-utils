@@ -1,16 +1,16 @@
 {
   "name": "haraka-utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Haraka general purpose functions",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint *.js test/*.js",
-    "lintfix": "./node_modules/.bin/eslint --fix *.js test/*.js",
-    "test": "./run_tests",
-    "cover": "./node_modules/.bin/istanbul cover ./run_tests"
+    "lint": "npx eslint *.js test/*.js",
+    "lintfix": "npx eslint --fix *.js test/*.js",
+    "test": "npx mocha",
+    "cover": "NODE_ENV=cov npx nyc --reporter=lcovonly -x tests npm run test"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,6 @@
   "devDependencies": {
     "eslint": "*",
     "eslint-plugin-haraka": "*",
-    "nodeunit": "*"
+    "mocha": "*"
   }
 }

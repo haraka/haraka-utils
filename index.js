@@ -54,11 +54,13 @@ exports.sort_keys = function (obj) {
 exports.uniq = function (arr) {
     const out = [];
     let o = 0;
-    for (let i=0,l=arr.length; i < l; i++) {
+    for (let i=0; i < arr.length; i++) {
         if (out.length === 0) {
             out.push(arr[i]);
+            continue;
         }
-        else if (out[o] !== arr[i]) {
+        if (out.includes(arr[i])) continue;
+        if (out[o] !== arr[i]) {
             out.push(arr[i]);
             o++;
         }
