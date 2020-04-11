@@ -1,4 +1,4 @@
-name: CI Tests - Windows
+name: CI Windows
 
 on: [ push, pull_request ]
 
