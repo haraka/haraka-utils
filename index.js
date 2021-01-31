@@ -1,5 +1,7 @@
 'use strict';
 
+const libqp = require('libqp');
+
 // copied from http://www.broofa.com/Tools/Math.uuid.js
 const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     .split('');
@@ -104,113 +106,9 @@ ${_pad(d.getSeconds(),2)} \
 ${d.toString().match(/\sGMT([+-]\d+)/)[1]}`;
 }
 
-exports.decode_qp = function (line) {
-    line = line.replace(/\r\n/g,"\n").replace(/[ \t]+\r?\n/g,"\n");
-    if (! /=/.test(line)) return Buffer.from(line); // maybe a pointless optimisation
+exports.decode_qp = str => libqp.decode(str);
 
-    line = line.replace(/=\n/mg, '');
-    const buf = Buffer.alloc(line.length);
-    let pos = 0;
-    for (let i=0,l=line.length; i < l; i++) {
-        if (line[i] === '=' &&
-            /=[0-9a-fA-F]{2}/.test(`${line[i]}${line[i+1]}${line[i+2]}`)) {
-            i++;
-            buf[pos] = parseInt(`${line[i]}${line[i+1]}`, 16);
-            i++;
-        }
-        else {
-            buf[pos] = line.charCodeAt(i);
-        }
-        pos++;
-    }
-    return buf.slice(0, pos);
-}
-
-function _char_to_qp (ch) {
-    return _buf_to_qp(Buffer.from(ch));
-}
-
-function _is_printable (charCode) {
-    switch (charCode) {
-        case 61:  // = (special in encoded words)
-            return false;
-        case 13:  // CR
-        case 10:  // LF
-            return true;
-    }
-    // much faster than a compound switch
-    if (charCode > 32 && charCode <= 126) return true;
-    return false;
-}
-
-function _buf_to_qp (b) {
-    let r = '';
-    for (let i=0; i<b.length; i++) {
-        if (_is_printable(b[i])) {
-            r = `${r}${String.fromCharCode(b[i])}`;
-        }
-        else {
-            r = `${r}=${_pad(b[i].toString(16).toUpperCase(), 2)}`;
-        }
-    }
-    return r;
-}
-
-// Shameless attempt to copy from Perl's MIME::QuotedPrint::Perl code.
-const qpRe = /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g;
-function asQuotedPrintable (str) {
-    if (Buffer.isBuffer(str)) return _buf_to_qp(str);
-
-    return str
-        .replace(qpRe, (orig, p1) => { return _char_to_qp(p1); })
-        .replace(/([ \t]+)$/gm, (orig, p1) => { return p1.split('').map(_char_to_qp).join(''); });
-}
-
-exports.encode_qp = (str) => {
-    str = asQuotedPrintable(str);
-
-    // Now shorten lines to 76 chars, but don't break =XX encodes.
-    // Method: iterate over to char 73.
-    //   If char 74, 75 or 76 is = we need to break before the =.
-    //   Otherwise break at 76.
-    let cur_length = 0;
-    let out = '';
-    for (let i=0; i<str.length; i++) {
-        if (str[i] === '\n') {
-            out = `${out}\n`;
-            cur_length = 0;
-            continue;
-        }
-
-        cur_length++;
-        if (cur_length <= 73) {
-            out = `${out}${str[i]}`;
-        }
-        else if (cur_length > 73 && cur_length < 76) {
-            if (str[i] === '=') {
-                out = `${out}=\n=`;
-                cur_length = 1;
-            }
-            else {
-                out = `${out}${str[i]}`;
-            }
-        }
-        else {
-            // Otherwise got to char 76
-
-            // Don't insert '=\n' if end of string or next char is already \n:
-            if ((i === (str.length - 1)) || (str[i+1] === '\n')) {
-                out = `${out}${str[i]}`;
-            }
-            else {
-                out = `${out}=\n${str[i]}`;
-                cur_length = 1;
-            }
-        }
-    }
-
-    return out;
-}
+exports.encode_qp = str => libqp.wrap(libqp.encode(str));
 
 exports.node_min = function (min, cur) {
     const wants = min.split('.');
