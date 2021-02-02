@@ -1,4 +1,12 @@
 
+## 1.0.3 - 2021-02-02
+
+- Use libqp <https://www.npmjs.com/package/libqp> for quoted-printable encoding and decoding
+    - encode whitespace only when required
+    - wrap lines at spaces for better readability
+- Update tests to reflect new behavior
+
+
 ## 1.0.2 - 2020-04-10
 
 - CI tests:

@@ -1,6 +1,6 @@
 {
   "name": "haraka-utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Haraka general purpose functions",
   "main": "index.js",
   "directories": {
