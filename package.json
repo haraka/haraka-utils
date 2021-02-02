@@ -1,6 +1,6 @@
 {
   "name": "haraka-utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Haraka general purpose functions",
   "main": "index.js",
   "directories": {
@@ -31,5 +31,8 @@
     "eslint": "*",
     "eslint-plugin-haraka": "*",
     "mocha": "*"
+  },
+  "dependencies": {
+    "libqp": "^1.1.0"
   }
 }

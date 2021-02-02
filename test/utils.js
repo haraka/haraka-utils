@@ -38,6 +38,13 @@ describe('encode_qp', function () {
         done();
     })
 
+    it('plain ascii should not be encoded in Buffers', function (done) {
+        assert.equal(
+            utils.encode_qp(Buffer.from('quoted printable')),
+            'quoted printable');
+        done();
+    })
+
     it('8-bit chars should be encoded', function (done) {
         assert.equal(
             utils.encode_qp(
@@ -47,20 +54,29 @@ describe('encode_qp', function () {
         done();
     })
 
-    it('trailing space should be encoded', function (done) {
-        assert.equal(utils.encode_qp('  '), '=20=20');
-        assert.equal(utils.encode_qp('\tt\t'), '\tt=09');
+    it('8-bit chars should be encoded in Buffers', function (done) {
         assert.equal(
-            utils.encode_qp('test  \ntest\n\t \t \n'),
-            'test=20=20\ntest\n=09=20=09=20\n'
-        );
-        assert.equal(utils.encode_qp("foo \t "), "foo=20=09=20");
-        assert.equal(utils.encode_qp("foo\t \n \t"), "foo=09=20\n=20=09");
+            utils.encode_qp(
+                Buffer.from('v\xe5re kj\xe6re norske tegn b\xf8r \xe6res')
+            ),
+            'v=C3=A5re kj=C3=A6re norske tegn b=C3=B8r =C3=A6res');
         done();
     })
 
-    it('trailing space should be decoded unless newline', function (done) {
-        assert.deepEqual(utils.decode_qp("foo  "), Buffer.from("foo  "));
+    it('trailing space should be encoded', function (done) {
+        assert.equal(utils.encode_qp('  '), ' =20');
+        assert.equal(utils.encode_qp('\tt\t'), '\tt=09');
+        assert.equal(
+            utils.encode_qp('test  \ntest\n\t \t \n'),
+            'test =20\ntest\n\t \t=20\n'
+        );
+        assert.equal(utils.encode_qp("foo \t "), "foo \t=20");
+        assert.equal(utils.encode_qp("foo\t \n \t"), "foo\t=20\n =09");
+        done();
+    })
+
+    it('trailing space should NOT be decoded', function (done) {
+        assert.deepEqual(utils.decode_qp("foo  "), Buffer.from("foo"));
         assert.deepEqual(utils.decode_qp("foo  \n"), Buffer.from("foo\n"));
         done();
     })
@@ -71,13 +87,13 @@ describe('encode_qp', function () {
         done();
     })
 
-    it('Very long lines should be broken', function (done) {
-        assert.equal(utils.encode_qp("The Quoted-Printable encoding is intended to represent data that largely consists of octets that correspond to printable characters in the ASCII character set."), "The Quoted-Printable encoding is intended to represent data that largely co=\nnsists of octets that correspond to printable characters in the ASCII chara=\ncter set.");
+    it('Long lines should be broken', function (done) {
+        assert.equal(utils.encode_qp("The Quoted-Printable encoding is intended to represent data that largely consists of octets that correspond to printable characters in the ASCII character set."), "The Quoted-Printable encoding is intended to represent data that largely =\r\nconsists of octets that correspond to printable characters in the ASCII =\r\ncharacter set.");
         done();
     })
 
     it('multiple long lines', function (done) {
-        assert.equal(utils.encode_qp("College football is a game which would be much more interesting if the faculty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and necks, and simultaneously an appreciable diminution in the loss to humanity. -- H. L. Mencken"), "College football is a game which would be much more interesting if the facu=\nlty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and=\n necks, and simultaneously an appreciable diminution in the loss to humanit=\ny. -- H. L. Mencken");
+        assert.equal(utils.encode_qp("College football is a game which would be much more interesting if the faculty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and necks, and simultaneously an appreciable diminution in the loss to humanity. -- H. L. Mencken"), "College football is a game which would be much more interesting if the =\r\nfaculty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and=\r\n necks, and simultaneously an appreciable diminution in the loss to =\r\nhumanity. -- H. L. Mencken");
         done();
     })
 
@@ -88,15 +104,15 @@ xxxxxxxxxxxxxxxxxx`;
         assert.equal(utils.encode_qp(`${buffer}1234`), `${buffer}1234`);
         assert.equal(utils.encode_qp(`${buffer}12345`), `${buffer}12345`);
         assert.equal(utils.encode_qp(`${buffer}123456`), `${buffer}123456`);
-        assert.equal(utils.encode_qp(`${buffer}1234567`), `${buffer}12345=\n67`);
-        assert.equal(utils.encode_qp(`${buffer}123456=`), `${buffer}12345=\n6=3D`);
+        assert.equal(utils.encode_qp(`${buffer}1234567`), `${buffer}12345=\r\n67`);
+        assert.equal(utils.encode_qp(`${buffer}123456=`), `${buffer}12345=\r\n6=3D`);
         assert.equal(utils.encode_qp(`${buffer}123\n`), `${buffer}123\n`);
         assert.equal(utils.encode_qp(`${buffer}1234\n`), `${buffer}1234\n`);
         assert.equal(utils.encode_qp(`${buffer}12345\n`), `${buffer}12345\n`);
-        assert.equal(utils.encode_qp(`${buffer}123456\n`), `${buffer}123456\n`);
-        assert.equal(utils.encode_qp(`${buffer}1234567\n`), `${buffer}12345=\n67\n`);
+        assert.equal(utils.encode_qp(`${buffer}123456\n`), `${buffer}12345=\r\n6\n`);
+        assert.equal(utils.encode_qp(`${buffer}1234567\n`), `${buffer}12345=\r\n67\n`);
         assert.equal(
-            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
+            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\r\n6=3D\n`
         );
         done();
     })
@@ -105,26 +121,26 @@ xxxxxxxxxxxxxxxxxx`;
         const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
 xxxxxxxxxxxxxxxxxx`;
         assert.equal(
-            utils.encode_qp(`${buffer}===xxxxx`), `${buffer}=3D=\n=3D=3Dxxxxx`
+            utils.encode_qp(`${buffer}===xxxxx`), `${buffer}=3D=\r\n=3D=3Dxxxxx`
         );
         assert.equal(
-            utils.encode_qp(`${buffer}1===xxxx`), `${buffer}1=3D=\n=3D=3Dxxxx`
+            utils.encode_qp(`${buffer}1===xxxx`), `${buffer}1=3D=\r\n=3D=3Dxxxx`
         );
         assert.equal(
-            utils.encode_qp(`${buffer}12===xxx`), `${buffer}12=3D=\n=3D=3Dxxx`
+            utils.encode_qp(`${buffer}12===xxx`), `${buffer}12=3D=\r\n=3D=3Dxxx`
         );
         assert.equal(
-            utils.encode_qp(`${buffer}123===xx`), `${buffer}123=\n=3D=3D=3Dxx`
+            utils.encode_qp(`${buffer}123===xx`), `${buffer}123=\r\n=3D=3D=3Dxx`
         );
         assert.equal(
-            utils.encode_qp(`${buffer}1234===x`), `${buffer}1234=\n=3D=3D=3Dx`
+            utils.encode_qp(`${buffer}1234===x`), `${buffer}1234=\r\n=3D=3D=3Dx`
         );
         assert.equal(utils.encode_qp(`${buffer}12=\n`), `${buffer}12=3D\n`);
-        assert.equal(utils.encode_qp(`${buffer}123=\n`), `${buffer}123=\n=3D\n`);
-        assert.equal(utils.encode_qp(`${buffer}1234=\n`), `${buffer}1234=\n=3D\n`);
-        assert.equal(utils.encode_qp(`${buffer}12345=\n`), `${buffer}12345=\n=3D\n`);
+        assert.equal(utils.encode_qp(`${buffer}123=\n`), `${buffer}123=\r\n=3D\n`);
+        assert.equal(utils.encode_qp(`${buffer}1234=\n`), `${buffer}1234=\r\n=3D\n`);
+        assert.equal(utils.encode_qp(`${buffer}12345=\n`), `${buffer}12345=\r\n=3D\n`);
         assert.equal(
-            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
+            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\r\n6=3D\n`
         );
         done();
     })
@@ -132,10 +148,10 @@ xxxxxxxxxxxxxxxxxx`;
     it('some extra special cases we have had problems with', function (done) {
         const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
 xxxxxxxxxxxxxxxxxx`;
-        assert.equal(utils.encode_qp(`${buffer}12=x=x`), `${buffer}12=3D=\nx=3Dx`);
+        assert.equal(utils.encode_qp(`${buffer}12=x=x`), `${buffer}12=3D=\r\nx=3Dx`);
         assert.equal(
             utils.encode_qp(`${buffer}12345${buffer}12345${buffer}123456\n`),
-            `${buffer}12345=\n${buffer}12345=\n${buffer}123456\n`
+            `${buffer}12345=\r\n${buffer}12345=\r\n${buffer}12345=\r\n6\n`
         );
         done();
     })
@@ -151,7 +167,7 @@ xxxxxxxxxxxxxxxxxx`;
     it('regression test 01 with CRLF', function (done) {
         assert.deepEqual(
             utils.decode_qp("foo  \r\n\r\nfoo =\r\n\r\nfoo=20\r\n\r\n"),
-            Buffer.from("foo\n\nfoo \nfoo \n\n")
+            Buffer.from("foo\r\n\r\nfoo \r\nfoo \r\n\r\n")
         );
         done();
     })
@@ -167,7 +183,7 @@ xxxxxxxxxxxxxxxxxx`;
     it('regression test 02 with CRLF', function (done) {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20\r\nbar\t\x20\r\n"),
-            Buffer.from("foo bar\n")
+            Buffer.from("foo bar\r\n")
         );
         done();
     })
@@ -188,7 +204,7 @@ xxxxxxxxxxxxxxxxxx`;
 
     it('regression test 04 from CRLF to LF', function (done) {
         assert.deepEqual(
-            utils.decode_qp("foo = \t\x20y\r\n"), Buffer.from("foo = \t\x20y\n")
+            utils.decode_qp("foo = \t\x20y\r\n"), Buffer.from("foo = \t\x20y\r\n")
         );
         done();
     })
