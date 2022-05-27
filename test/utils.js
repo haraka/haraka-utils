@@ -373,3 +373,9 @@ describe('shuffle', function () {
         done();
     })
 })
+
+describe('date_to_str', function () {
+    it('returns a string representation of a date', function () {
+        assert.equal(utils.date_to_str(new Date('2022-01-01T00:00:00.000Z')), 'Fri, 31 Dec 2021 16:00:00 -0800');
+    })
+})

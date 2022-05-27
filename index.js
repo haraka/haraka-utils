@@ -29,7 +29,7 @@ exports.uuid = function () {
 exports.in_array = function (item, array) {
     if (!array) return false;
     if (!Array.isArray(array)) return false;
-    return (array.indexOf(item) !== -1);
+    return array.includes(item);
 }
 
 exports.to_object = function (array) {
@@ -53,9 +53,9 @@ exports.sort_keys = function (obj) {
 
 exports.uniq = function (arr) {
     const out = [];
-    for (let i=0; i < arr.length; i++) {
-        if (out.includes(arr[i])) continue;
-        out.push(arr[i]);
+    for (const i of arr) {
+        if (out.includes(i)) continue;
+        out.push(i);
     }
     return out;
 }
@@ -88,15 +88,13 @@ const _monnames = [
 ];
 
 function _pad (num, n, p) {
-    let s = `${num}`;
-    p = p || '0';
-    while (s.length < n) s = `${p}${s}`;
-    return s;
+    return num.toString().padStart(n, p || '0')
 }
 
 exports.pad = _pad;
 
 exports.date_to_str = function (d) {
+    // https://www.rfc-editor.org/rfc/rfc2822#section-3.3
     return `${_daynames[d.getDay()]}, ${_pad(d.getDate(),2)} \
 ${_monnames[d.getMonth()]} ${d.getFullYear()} \
 ${_pad(d.getHours(),2)}:${_pad(d.getMinutes(),2)}:\
@@ -167,6 +165,8 @@ function asQuotedPrintable (str) {
 }
 
 exports.encode_qp = (str) => {
+    // https://tools.ietf.org/html/rfc2045#section-6.7
+
     str = asQuotedPrintable(str);
 
     // Now shorten lines to 76 chars, but don't break =XX encodes.
