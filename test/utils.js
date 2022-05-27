@@ -33,21 +33,18 @@ describe('uniq', function () {
 })
 
 describe('encode_qp', function () {
-    it('plain ascii should not be encoded', function (done) {
+    it('plain ascii should not be encoded', function () {
         assert.equal(utils.encode_qp('quoted printable'), 'quoted printable');
-        done();
     })
 
-    it('8-bit chars should be encoded', function (done) {
+    it('8-bit chars should be encoded', function () {
         assert.equal(
-            utils.encode_qp(
-                'v\xe5re kj\xe6re norske tegn b\xf8r \xe6res'
-            ),
-            'v=C3=A5re kj=C3=A6re norske tegn b=C3=B8r =C3=A6res');
-        done();
+            utils.encode_qp('v\xe5re kj\xe6re norske tegn b\xf8r \xe6res'),
+            'v=C3=A5re kj=C3=A6re norske tegn b=C3=B8r =C3=A6res'
+        );
     })
 
-    it('trailing space should be encoded', function (done) {
+    it('trailing space should be encoded', function () {
         assert.equal(utils.encode_qp('  '), '=20=20');
         assert.equal(utils.encode_qp('\tt\t'), '\tt=09');
         assert.equal(
@@ -56,32 +53,27 @@ describe('encode_qp', function () {
         );
         assert.equal(utils.encode_qp("foo \t "), "foo=20=09=20");
         assert.equal(utils.encode_qp("foo\t \n \t"), "foo=09=20\n=20=09");
-        done();
     })
 
-    it('trailing space should be decoded unless newline', function (done) {
+    it('trailing space should be decoded unless newline', function () {
         assert.deepEqual(utils.decode_qp("foo  "), Buffer.from("foo  "));
         assert.deepEqual(utils.decode_qp("foo  \n"), Buffer.from("foo\n"));
-        done();
     })
 
-    it('"=" is special and should be decoded', function (done) {
+    it('"=" is special and should be decoded', function () {
         assert.equal(utils.encode_qp("=30\n"), "=3D30\n");
         assert.equal(utils.encode_qp("\0\xff0"), "=00=C3=BF0");
-        done();
     })
 
-    it('Very long lines should be broken', function (done) {
+    it('Very long lines should be broken', function () {
         assert.equal(utils.encode_qp("The Quoted-Printable encoding is intended to represent data that largely consists of octets that correspond to printable characters in the ASCII character set."), "The Quoted-Printable encoding is intended to represent data that largely co=\nnsists of octets that correspond to printable characters in the ASCII chara=\ncter set.");
-        done();
     })
 
-    it('multiple long lines', function (done) {
+    it('multiple long lines', function () {
         assert.equal(utils.encode_qp("College football is a game which would be much more interesting if the faculty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and necks, and simultaneously an appreciable diminution in the loss to humanity. -- H. L. Mencken"), "College football is a game which would be much more interesting if the facu=\nlty played instead of the students, and even more interesting if the\ntrustees played.  There would be a great increase in broken arms, legs, and=\n necks, and simultaneously an appreciable diminution in the loss to humanit=\ny. -- H. L. Mencken");
-        done();
     })
 
-    it("Don't break a line that's near but not over 76 chars", function (done) {
+    it("Don't break a line that's near but not over 76 chars", function () {
         const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
 xxxxxxxxxxxxxxxxxx`;
         assert.equal(utils.encode_qp(`${buffer}123`), `${buffer}123`);
@@ -98,38 +90,24 @@ xxxxxxxxxxxxxxxxxx`;
         assert.equal(
             utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
         );
-        done();
     })
 
-    it('Not allowed to break =XX escapes using soft line break', function (done) {
+    it('Not allowed to break =XX escapes using soft line break', function () {
         const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
 xxxxxxxxxxxxxxxxxx`;
-        assert.equal(
-            utils.encode_qp(`${buffer}===xxxxx`), `${buffer}=3D=\n=3D=3Dxxxxx`
-        );
-        assert.equal(
-            utils.encode_qp(`${buffer}1===xxxx`), `${buffer}1=3D=\n=3D=3Dxxxx`
-        );
-        assert.equal(
-            utils.encode_qp(`${buffer}12===xxx`), `${buffer}12=3D=\n=3D=3Dxxx`
-        );
-        assert.equal(
-            utils.encode_qp(`${buffer}123===xx`), `${buffer}123=\n=3D=3D=3Dxx`
-        );
-        assert.equal(
-            utils.encode_qp(`${buffer}1234===x`), `${buffer}1234=\n=3D=3D=3Dx`
-        );
+        assert.equal(utils.encode_qp(`${buffer}===xxxxx`), `${buffer}=3D=\n=3D=3Dxxxxx`);
+        assert.equal(utils.encode_qp(`${buffer}1===xxxx`), `${buffer}1=3D=\n=3D=3Dxxxx`);
+        assert.equal(utils.encode_qp(`${buffer}12===xxx`), `${buffer}12=3D=\n=3D=3Dxxx`);
+        assert.equal(utils.encode_qp(`${buffer}123===xx`), `${buffer}123=\n=3D=3D=3Dxx`);
+        assert.equal(utils.encode_qp(`${buffer}1234===x`), `${buffer}1234=\n=3D=3D=3Dx`);
         assert.equal(utils.encode_qp(`${buffer}12=\n`), `${buffer}12=3D\n`);
         assert.equal(utils.encode_qp(`${buffer}123=\n`), `${buffer}123=\n=3D\n`);
         assert.equal(utils.encode_qp(`${buffer}1234=\n`), `${buffer}1234=\n=3D\n`);
         assert.equal(utils.encode_qp(`${buffer}12345=\n`), `${buffer}12345=\n=3D\n`);
-        assert.equal(
-            utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`
-        );
-        done();
+        assert.equal(utils.encode_qp(`${buffer}123456=\n`), `${buffer}12345=\n6=3D\n`);
     })
 
-    it('some extra special cases we have had problems with', function (done) {
+    it('some extra special cases we have had problems with', function () {
         const buffer = `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\
 xxxxxxxxxxxxxxxxxx`;
         assert.equal(utils.encode_qp(`${buffer}12=x=x`), `${buffer}12=3D=\nx=3Dx`);
@@ -137,77 +115,85 @@ xxxxxxxxxxxxxxxxxx`;
             utils.encode_qp(`${buffer}12345${buffer}12345${buffer}123456\n`),
             `${buffer}12345=\n${buffer}12345=\n${buffer}123456\n`
         );
-        done();
     })
 
-    it('regression test 01', function (done) {
+    it('regression test 01', function () {
         assert.deepEqual(
             utils.decode_qp("foo  \n\nfoo =\n\nfoo=20\n\n"),
             Buffer.from("foo\n\nfoo \nfoo \n\n")
         );
-        done();
     })
 
-    it('regression test 01 with CRLF', function (done) {
+    it('regression test 01 with CRLF', function () {
         assert.deepEqual(
             utils.decode_qp("foo  \r\n\r\nfoo =\r\n\r\nfoo=20\r\n\r\n"),
             Buffer.from("foo\n\nfoo \nfoo \n\n")
         );
-        done();
     })
 
-    it('regression test 02', function (done) {
+    it('regression test 02', function () {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20\nbar\t\x20\n"),
             Buffer.from("foo bar\n")
         );
-        done();
     })
 
-    it('regression test 02 with CRLF', function (done) {
+    it('regression test 02 with CRLF', function () {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20\r\nbar\t\x20\r\n"),
             Buffer.from("foo bar\n")
         );
-        done();
     })
 
-    it('regression test 03', function (done) {
+    it('regression test 03', function () {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20\n"), Buffer.from("foo ")
         );
-        done();
     })
 
-    it('regression test 03 with CRLF', function (done) {
+    it('regression test 03 with CRLF', function () {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20\r\n"), Buffer.from("foo ")
         );
-        done();
     })
 
-    it('regression test 04 from CRLF to LF', function (done) {
+    it('regression test 04 from CRLF to LF', function () {
         assert.deepEqual(
             utils.decode_qp("foo = \t\x20y\r\n"), Buffer.from("foo = \t\x20y\n")
         );
-        done();
     })
 
-    it('regression test 05 should be the same', function (done) {
+    it('regression test 05 should be the same', function () {
         assert.deepEqual(
             utils.decode_qp("foo =xy\n"), Buffer.from("foo =xy\n")
         );
-        done();
     })
 
-    it('spin encode_qp()', function (done) {
+    it('spin encode_qp()', function () {
         const spin = 10000;
         for (let i = 0; i < spin; i++) {
             assert.equal(
                 utils.encode_qp("quoted printable"), "quoted printable"
             );
         }
-        done();
+    })
+
+    it.skip('plain ascii should not be encoded in Buffers', function () {
+        // See https://github.com/haraka/haraka-utils/issues/22
+        assert.equal(
+            utils.encode_qp(Buffer.from('quoted printable')),
+            'quoted printable'
+        );
+    })
+
+    it.skip('8-bit chars should be encoded in Buffers', function () {
+        // See https://github.com/haraka/haraka-utils/issues/22
+        assert.equal(
+            utils.encode_qp(
+                Buffer.from('v\xe5re kj\xe6re norske tegn b\xf8r \xe6res')
+            ),
+            'v=C3=A5re kj=C3=A6re norske tegn b=C3=B8r =C3=A6res'
+        );
     })
 })
 
