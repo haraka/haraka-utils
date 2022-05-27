@@ -169,7 +169,7 @@ exports.encode_qp = (str) => {
 
     str = asQuotedPrintable(str);
 
-    // Now shorten lines to 76 chars, but don't break =XX encodes.
+    // Shorten lines to 76 chars, but don't break =XX encodes.
     // Method: iterate over to char 73.
     //   If char 74, 75 or 76 is = we need to break before the =.
     //   Otherwise break at 76.
