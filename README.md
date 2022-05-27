@@ -1,4 +1,4 @@
-![CI][ci-url]
+[![CI][ci-img]][ci-url]
 [![Coverage Status][cov-img]][cov-url]
 [![Code Climate][clim-img]][clim-url]
 [![NPM][npm-img]][npm-url]
