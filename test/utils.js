@@ -394,3 +394,13 @@ describe('in_array', function () {
         assert.equal(utils.in_array('2', testArr), true)
     })
 })
+
+describe('indexOfLF', function () {
+    it('find a LF at the right spot', function () {
+        assert.equal(utils.indexOfLF(Buffer.from(`in t\nfourth`)), 4)
+    })
+
+    it('find a LF at the right spot', function () {
+        assert.equal(utils.indexOfLF(Buffer.from(`in the\neighth`)), 6)
+    })
+})
