@@ -383,3 +383,14 @@ describe('date_to_str', function () {
         assert.equal(r, 'Sat, 01 Jan 2022 00:00:00');
     })
 })
+
+describe('in_array', function () {
+    const testArr = [ 1, '2', 5 ]
+    it('returns false when item missing', function () {
+        assert.equal(utils.in_array(2, testArr), false)
+    })
+
+    it('returns true when item is present', function () {
+        assert.equal(utils.in_array('2', testArr), true)
+    })
+})
