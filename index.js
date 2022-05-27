@@ -164,9 +164,10 @@ function asQuotedPrintable (str) {
         .replace(/([ \t]+)$/gm, (orig, p1) => { return p1.split('').map(_char_to_qp).join(''); });
 }
 
+// NOTE: deprecated. Haraka now uses 'libqp' instead.
+// See https://github.com/haraka/haraka-utils/issues/22
 exports.encode_qp = (str) => {
     // https://tools.ietf.org/html/rfc2045#section-6.7
-
     str = asQuotedPrintable(str);
 
     // Shorten lines to 76 chars, but don't break =XX encodes.
