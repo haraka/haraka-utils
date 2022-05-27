@@ -376,6 +376,10 @@ describe('shuffle', function () {
 
 describe('date_to_str', function () {
     it('returns a string representation of a date', function () {
-        assert.equal(utils.date_to_str(new Date('2022-01-01T00:00:00.000Z')), 'Fri, 31 Dec 2021 16:00:00 -0800');
+        let testDate = new Date('2022-01-01T00:00:00.000Z')
+        // adjust JS date by the test runners TZ offset
+        testDate = new Date(testDate.getTime() + (testDate.getTimezoneOffset() * 60 * 1000))
+        const r = utils.date_to_str(testDate).substring(0, 25) // strip TZ offset
+        assert.equal(r, 'Sat, 01 Jan 2022 00:00:00');
     })
 })
