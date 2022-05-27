@@ -1,5 +1,17 @@
 
-## 1.0.2 - 2020-04-10
+
+### 1.0.3 - 2022-05-27
+
+- chore(ci): update with shared GHA workflows
+- chore(ci): adjust codeclimate config
+- chore(test): added tests for date_to_str, in_array, indexOfLF
+- doc(README): fix badge URLs
+- style: replace indexOf with includes (es6)
+- style: replace for (i) with for..of
+- style: \_pad uses str.padStart (avail since node 8)
+
+
+### 1.0.2 - 2020-04-10
 
 - CI tests:
     - replaced defunct nodeunit with mocha
@@ -12,7 +24,7 @@
 - change names of 1024 base units to match IEC 80000-13:2008 standard #12
 
 
-## 1.0.1 - 2017-06-16
+### 1.0.1 - 2017-06-16
 
 - depend on haraka-eslint
 - lint fixes for compat with eslint 4

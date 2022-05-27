@@ -373,3 +373,34 @@ describe('shuffle', function () {
         done();
     })
 })
+
+describe('date_to_str', function () {
+    it('returns a string representation of a date', function () {
+        let testDate = new Date('2022-01-01T00:00:00.000Z')
+        // adjust JS date by the test runners TZ offset
+        testDate = new Date(testDate.getTime() + (testDate.getTimezoneOffset() * 60 * 1000))
+        const r = utils.date_to_str(testDate).substring(0, 25) // strip TZ offset
+        assert.equal(r, 'Sat, 01 Jan 2022 00:00:00');
+    })
+})
+
+describe('in_array', function () {
+    const testArr = [ 1, '2', 5 ]
+    it('returns false when item missing', function () {
+        assert.equal(utils.in_array(2, testArr), false)
+    })
+
+    it('returns true when item is present', function () {
+        assert.equal(utils.in_array('2', testArr), true)
+    })
+})
+
+describe('indexOfLF', function () {
+    it('find a LF at the right spot', function () {
+        assert.equal(utils.indexOfLF(Buffer.from(`in t\nfourth`)), 4)
+    })
+
+    it('find a LF at the right spot', function () {
+        assert.equal(utils.indexOfLF(Buffer.from(`in the\neighth`)), 6)
+    })
+})
