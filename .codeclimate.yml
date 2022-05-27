@@ -6,7 +6,7 @@ engines:
       config: ".eslintrc.yaml"
 
 checks:
-    method-lines:
+  method-lines:
     config:
       threshold: 50
   method-complexity:
