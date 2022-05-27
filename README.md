@@ -21,8 +21,9 @@ const utils = require('haraka-utils');
 
 
 [ci-url]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml
-[cov-img]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml/badge.svg
+[ci-img]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml/badge.svg
 [cov-url]: https://codecov.io/github/haraka/haraka-utils?branch=master
+[cov-img]: https://codecov.io/github/haraka/haraka-utils/coverage.svg
 [clim-img]: https://codeclimate.com/github/haraka/haraka-utils/badges/gpa.svg
 [clim-url]: https://codeclimate.com/github/haraka/haraka-utils
 [npm-img]: https://nodei.co/npm/haraka-utils.png
