@@ -1,4 +1,4 @@
-![CI Linux][ci-url]
+![CI][ci-url]
 [![Coverage Status][cov-img]][cov-url]
 [![Code Climate][clim-img]][clim-url]
 [![NPM][npm-img]][npm-url]
@@ -20,8 +20,8 @@ const utils = require('haraka-utils');
 - [haraka-net-utils](https://www.npmjs.com/package/haraka-net-utils)
 
 
-[ci-url]: https://github.com/haraka/haraka-utils/workflows/CI%20Linux/badge.svg
-[cov-img]: https://codecov.io/github/haraka/haraka-utils/coverage.svg
+[ci-url]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml
+[cov-img]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml/badge.svg
 [cov-url]: https://codecov.io/github/haraka/haraka-utils?branch=master
 [clim-img]: https://codeclimate.com/github/haraka/haraka-utils/badges/gpa.svg
 [clim-url]: https://codeclimate.com/github/haraka/haraka-utils
