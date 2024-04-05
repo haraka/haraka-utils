@@ -344,10 +344,10 @@ exports.copyDir = function (srcPath, dstPath) {
         const srcStat = fs.statSync(srcFile);
 
         if (srcStat.isDirectory()) {   // if directory
-            copyDir(srcFile, dstFile); // recurse
+            exports.copyDir(srcFile, dstFile); // recurse
         }
         else if (srcStat.isFile()) {    // if file
-            copyFile(srcFile, dstFile); // copy to dstPath (no overwrite)
+            exports.copyFile(srcFile, dstFile); // copy to dstPath (no overwrite)
         }
     }
 }
@@ -375,9 +375,9 @@ exports.copyFile = function (srcFile, dstFile) {
     }
 }
 
-exports.createFile = function (filePath, data, info) {
+exports.createFile = function (filePath, data, info = {}, force=false) {
     try {
-        if (fs.existsSync(filePath) && !parsed.force) {
+        if (fs.existsSync(filePath) && !force) {
             throw `${filePath} already exists`;
         }
         exports.mkDir(path.dirname(filePath));
