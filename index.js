@@ -129,7 +129,7 @@ exports.decode_qp = function (line) {
 }
 
 function _char_to_qp (ch) {
-    _is_printable
+    console.warn(`SUNSET: 2025`)
     return _buf_to_qp(Buffer.from(ch));
 }
 
