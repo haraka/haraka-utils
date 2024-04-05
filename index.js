@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require('fs')
+const path = require('path')
+
 // copied from http://www.broofa.com/Tools/Math.uuid.js
 const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     .split('');
@@ -103,6 +106,7 @@ ${d.toString().match(/\sGMT([+-]\d+)/)[1]}`;
 }
 
 exports.decode_qp = function (line) {
+    console.warn(`SUNSET: 2025`)
     line = line.replace(/\r\n/g,"\n").replace(/[ \t]+\r?\n/g,"\n");
     if (! /=/.test(line)) return Buffer.from(line); // maybe a pointless optimisation
 
@@ -125,10 +129,12 @@ exports.decode_qp = function (line) {
 }
 
 function _char_to_qp (ch) {
+    _is_printable
     return _buf_to_qp(Buffer.from(ch));
 }
 
 function _is_printable (charCode) {
+    console.warn(`SUNSET: 2025`)
     switch (charCode) {
         case 61:  // = (special in encoded words)
             return false;
@@ -142,6 +148,7 @@ function _is_printable (charCode) {
 }
 
 function _buf_to_qp (b) {
+    console.warn(`SUNSET: 2025`)
     let r = '';
     for (let i=0; i<b.length; i++) {
         if (_is_printable(b[i])) {
@@ -157,6 +164,7 @@ function _buf_to_qp (b) {
 // Shameless attempt to copy from Perl's MIME::QuotedPrint::Perl code.
 const qpRe = /([^ \t\n!"#$%&'()*+,\-./0-9:;<>?@A-Z[\\\]^_`a-z{|}~])/g;
 function asQuotedPrintable (str) {
+    console.warn(`SUNSET: 2025`)
     if (Buffer.isBuffer(str)) return _buf_to_qp(str);
 
     return str
@@ -167,6 +175,7 @@ function asQuotedPrintable (str) {
 // NOTE: deprecated. Haraka now uses 'libqp' instead.
 // See https://github.com/haraka/haraka-utils/issues/22
 exports.encode_qp = (str) => {
+    console.warn(`SUNSET: 2025`)
     // https://tools.ietf.org/html/rfc2045#section-6.7
     str = asQuotedPrintable(str);
 
@@ -219,8 +228,8 @@ exports.node_min = function (min, cur) {
 
     for (let i=0; i<=3; i++) {
         // note use of unary + for fast type conversion to num
-        if (+has[i] > +wants[i]) { return true;  }
-        if (+has[i] < +wants[i]) { return false; }
+        if (+has[i] > +wants[i]) return true;
+        if (+has[i] < +wants[i]) return false;
     }
 
     // they're identical
@@ -319,3 +328,95 @@ exports.wildcard_to_regexp = function (str) {
 }
 
 exports.line_regexp = /^([^\n]*\n)/;
+
+exports.copyDir = function (srcPath, dstPath) {
+
+    exports.mkDir(dstPath);
+
+    for (const file of fs.readdirSync(srcPath)) {
+
+        // Ignore ".*"
+        if (/^\./.test(file)) continue;
+
+        const srcFile = path.join(srcPath, file);
+        const dstFile = path.join(dstPath, file);
+
+        const srcStat = fs.statSync(srcFile);
+
+        if (srcStat.isDirectory()) {   // if directory
+            exports.copyDir(srcFile, dstFile); // recurse
+        }
+        else if (srcStat.isFile()) {    // if file
+            exports.copyFile(srcFile, dstFile); // copy to dstPath (no overwrite)
+        }
+    }
+}
+
+exports.copyFile = function (srcFile, dstFile) {
+
+    try {
+        if (fs.statSync(dstFile).isFile()) {
+            warningMsg(`EEXIST, File exists '${dstFile}'`);
+            return;
+        }
+        throw `EEXIST but not a file: '${dstFile}'`;
+    }
+    catch (e) {
+        // File NOT exists
+        if (e.code == 'ENOENT') {
+            exports.mkDir(path.dirname(dstFile));
+            fs.writeFileSync(dstFile, fs.readFileSync(srcFile));
+            createMsg(dstFile)
+        }
+        else {
+            console.log(`copy ${srcFile} to ${dstFile}`);
+            throw e;
+        }
+    }
+}
+
+exports.createFile = function (filePath, data, info = {}, force=false) {
+    try {
+        if (fs.existsSync(filePath) && !force) {
+            throw `${filePath} already exists`;
+        }
+        exports.mkDir(path.dirname(filePath));
+        const fd = fs.openSync(filePath, 'w');
+        const output = data.replace(/%(\w+)%/g, function (i, m1) { return info[m1] });
+        fs.writeSync(fd, output, null);
+    }
+    catch (e) {
+        warningMsg(`Unable to create file: ${e}`);
+    }
+}
+
+function createMsg (dirPath) {
+    console.log(`\x1b[32mcreate\x1b[0m: ${dirPath}`);
+}
+
+function warningMsg (msg) {
+    console.error(`\x1b[31mwarning\x1b[0m: ${msg}`);
+}
+
+exports.mkDir = function (dstPath) {
+    try {
+        if (fs.statSync(dstPath).isDirectory()) return;
+    }
+    catch (ignore) {}
+
+    try {
+        fs.mkdirSync(dstPath, { recursive: true });
+        createMsg(dstPath);
+    }
+    catch (e) {
+        // File exists
+        console.error(e);
+        if (e.errno == 17) {
+            warningMsg(e.message);
+        }
+        else {
+            throw e;
+        }
+    }
+}
+

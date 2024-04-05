@@ -1,4 +1,11 @@
 
+### Unreleased
+
+### 1.1.0 - 2024-04-05
+
+- import from bin/haraka: copyFile, copyDir, mkDir, createFile
+- add SUNSET 2025 warnings to unused qp functions
+
 
 ### 1.0.3 - 2022-05-27
 
@@ -28,3 +35,6 @@
 
 - depend on haraka-eslint
 - lint fixes for compat with eslint 4
+
+
+[1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/1.1.0
