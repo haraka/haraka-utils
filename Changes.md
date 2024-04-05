@@ -28,3 +28,4 @@
 
 - depend on haraka-eslint
 - lint fixes for compat with eslint 4
+[1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/1.1.0
