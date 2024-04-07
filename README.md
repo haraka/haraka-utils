@@ -17,7 +17,6 @@ const utils = require('haraka-utils');
 
 - [haraka-net-utils](https://www.npmjs.com/package/haraka-net-utils)
 
-
 [ci-url]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml
 [ci-img]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml/badge.svg
 [cov-url]: https://codecov.io/github/haraka/haraka-utils?branch=master

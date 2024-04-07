@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - doc(README): make haraka a link
 - dep: eslint-plugin-haraka -> @haraka/eslint-config
+- chore: update package.json scripts
 
 ### [1.1.1] - 2024-04-05
 
@@ -32,9 +33,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### 1.0.2 - 2020-04-10
 
 - CI tests:
-    - replaced defunct nodeunit with mocha
-    - replace Travis/Appveyor with githut workflows
-    - use eslint 6
+  - replaced defunct nodeunit with mocha
+  - replace Travis/Appveyor with githut workflows
+  - use eslint 6
 - uniq now works with unsorted lists
 - update Buffer syntax, related to haraka/Haraka#2374
 - es6 updates
@@ -45,7 +46,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - depend on haraka-eslint
 - lint fixes for compat with eslint 4
-
 
 [1.0.3]: https://github.com/haraka/haraka-utils/releases/tag/1.0.3
 [1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.0
