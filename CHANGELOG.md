@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - doc(README): make haraka a link
 - dep: eslint-plugin-haraka -> @haraka/eslint-config
 - chore: update package.json scripts
+- prettier
 
 ### [1.1.1] - 2024-04-05
 
