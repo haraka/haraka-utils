@@ -16,7 +16,7 @@ jobs:
     secrets: inherit
 
   test:
-    needs: [ lint ]
+    needs: [lint]
     uses: haraka/.github/.github/workflows/ubuntu.yml@master
 
   windows:
