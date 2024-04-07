@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [1.1.2] - 2024-04-07
+
+- doc(README): make haraka a link
+- dep: eslint-plugin-haraka -> @haraka/eslint-config
 
 ### [1.1.1] - 2024-04-05
 
@@ -43,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - lint fixes for compat with eslint 4
 
 
-[1.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.1
-[1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.0
 [1.0.3]: https://github.com/haraka/haraka-utils/releases/tag/1.0.3
+[1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.0
+[1.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.1
+[1.1.2]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.2

@@ -5,15 +5,13 @@
 
 # haraka-utils
 
-General purpose haraka utilities.
+General purpose [haraka](https://haraka.github.io) utilities.
 
 ## Usage
 
 ```js
 const utils = require('haraka-utils');
 ```
-
-
 
 ## See Also
 
