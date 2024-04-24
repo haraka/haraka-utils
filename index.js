@@ -428,7 +428,7 @@ exports.mkDir = function (dstPath) {
 
 exports.getGitCommitId = (dir) => {
   return child
-    .spawnSync('git', ['show', '--format="%h"', '--no-patch'])
+    .spawnSync('git', ['-C', dir, 'show', '--format="%h"', '--no-patch'])
     .stdout.toString()
     .replaceAll('"', '')
     .trim();
