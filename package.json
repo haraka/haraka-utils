@@ -35,6 +35,6 @@
   },
   "homepage": "https://github.com/haraka/haraka-utils#readme",
   "devDependencies": {
-    "@haraka/eslint-config": "^1.1.3"
+    "@haraka/eslint-config": "^1.1.5"
   }
 }
