@@ -13,6 +13,14 @@ General purpose [haraka](https://haraka.github.io) utilities.
 const utils = require('haraka-utils');
 ```
 
+### getVersion (dir)
+
+Gets the version of the NPM package located at dir. If the dir is a git repo, it also appends the commit ID.
+
+```js
+utils.getVersion('.'); // '1.1.2/45e3812'
+```
+
 ## See Also
 
 - [haraka-net-utils](https://www.npmjs.com/package/haraka-net-utils)
