@@ -15,10 +15,10 @@ function cleanup() {
 
 before(() => {
   cleanup();
-})
+});
 after(() => {
   cleanup();
-})
+});
 
 describe('uuid', function () {
   it('generates a UUID of 36 characters', function (done) {
@@ -469,11 +469,10 @@ describe('copyDir', function () {
 
 describe('getVersion', function () {
   it('gets a NPM package version', () => {
-    const pkgVer = JSON.parse(fs.readFileSync(`./package.json`, 'utf8')).version
-    const commitId = utils.getGitCommitId('.')
-    assert.equal(
-      `${pkgVer}/${commitId}`,
-      utils.getVersion('.')
-    )
-  })
-})
+    const pkgVer = JSON.parse(
+      fs.readFileSync(`./package.json`, 'utf8'),
+    ).version;
+    const commitId = utils.getGitCommitId('.');
+    assert.equal(`${pkgVer}/${commitId}`, utils.getVersion('.'));
+  });
+});

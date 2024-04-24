@@ -427,25 +427,25 @@ exports.mkDir = function (dstPath) {
 };
 
 exports.getGitCommitId = (dir) => {
-    return child
-      .spawnSync('git', ['show', '--format="%h"', '--no-patch'])
-      .stdout.toString()
-      .replaceAll('"', '')
-      .trim()
-}
+  return child
+    .spawnSync('git', ['show', '--format="%h"', '--no-patch'])
+    .stdout.toString()
+    .replaceAll('"', '')
+    .trim();
+};
 
 exports.getVersion = function (pkgDir) {
-  if (this._version) return this._version // cache
+  if (this._version) return this._version; // cache
 
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json')));
-  this._version = pkg.version
+  this._version = pkg.version;
 
   try {
     // if within a git repo
-    fs.statSync(path.join(pkgDir, '.git'))
-    const commitId = this.getGitCommitId(pkgDir)
-    if (commitId) this._version += `/${commitId}`
+    fs.statSync(path.join(pkgDir, '.git'));
+    const commitId = this.getGitCommitId(pkgDir);
+    if (commitId) this._version += `/${commitId}`;
   } catch (ignore) {}
 
-  return this._version
-}
+  return this._version;
+};
