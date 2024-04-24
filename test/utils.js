@@ -15,10 +15,10 @@ function cleanup() {
 
 before(() => {
   cleanup();
-});
+})
 after(() => {
   cleanup();
-});
+})
 
 describe('uuid', function () {
   it('generates a UUID of 36 characters', function (done) {
@@ -305,22 +305,22 @@ describe('extend', function () {
 });
 
 describe('node_min', function () {
-  it('node is new enough', function (done) {
+  it('node is new enough', function () {
     assert.ok(utils.node_min('0.8.0', '0.10.0'));
     assert.ok(utils.node_min('0.10.0', '0.10.0'));
     assert.ok(utils.node_min('0.10.0', '0.10.1'));
     assert.ok(utils.node_min('0.10.0', '0.12.0'));
     assert.ok(utils.node_min('0.10.0', '1.0.0'));
     assert.ok(utils.node_min('0.10', '1.0'));
-    done();
+    assert.ok(utils.node_min('18.0.0', '18.0.1'));
   });
 
-  it('node is too old', function (done) {
+  it('node is too old', function () {
     assert.ok(!utils.node_min('0.12.0', '0.10.0'));
     assert.ok(!utils.node_min('1.0.0', '0.8.0'));
     assert.ok(!utils.node_min('1.0.0', '0.10.0'));
     assert.ok(!utils.node_min('1.0.0', '0.12.0'));
-    done();
+    assert.ok(!utils.node_min('20.0.1', '18.0.1'));
   });
 });
 
@@ -466,3 +466,14 @@ describe('copyDir', function () {
     assert.ok(fs.existsSync(dstDir));
   });
 });
+
+describe('getVersion', function () {
+  it('gets a NPM package version', () => {
+    const pkgVer = JSON.parse(fs.readFileSync(`./package.json`, 'utf8')).version
+    const commitId = utils.getGitCommitId('.')
+    assert.equal(
+      `${pkgVer}/${commitId}`,
+      utils.getVersion('.')
+    )
+  })
+})

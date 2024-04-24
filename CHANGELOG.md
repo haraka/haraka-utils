@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [1.1.3] - 2024-04-23
+
+- doc(CONTRIBUTORS): added
+- feat: added getGitCommitId & getVersion
+
 ### [1.1.2] - 2024-04-07
 
 - doc(README): make haraka a link
@@ -53,3 +58,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [1.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.0
 [1.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.1
 [1.1.2]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.2
+[1.1.3]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.3
