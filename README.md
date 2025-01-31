@@ -9,7 +9,7 @@ General purpose [haraka](https://haraka.github.io) utilities.
 ## Usage
 
 ```js
-const utils = require('haraka-utils');
+const utils = require('haraka-utils')
 ```
 
 ### getVersion (dir)
@@ -17,7 +17,7 @@ const utils = require('haraka-utils');
 Gets the version of the NPM package located at dir. If the dir is a git repo, it also appends the commit ID.
 
 ```js
-utils.getVersion('.'); // '1.1.2/45e3812'
+utils.getVersion('.') // '1.1.2/45e3812'
 ```
 
 ## See Also
