@@ -21,30 +21,26 @@ after(() => {
 })
 
 describe('uuid', function () {
-  it('generates a UUID of 36 characters', function (done) {
+  it('generates a UUID of 36 characters', function () {
     const uuid = utils.uuid()
     assert.equal(uuid.length, 36)
-    done()
   })
 
-  it('contains only UUID chars', function (done) {
+  it('contains only UUID chars', function () {
     const uuid = utils.uuid()
     assert.ok(/[0-9A-Za-z-]/.test(uuid))
-    done()
   })
 })
 
 describe('uniq', function () {
-  it('reduces an ordered array to unique elements', function (done) {
+  it('reduces an ordered array to unique elements', function () {
     const uniq = utils.uniq([1, 1, 2, 2, 3])
     assert.deepEqual(uniq, [1, 2, 3])
-    done()
   })
 
-  it('reduces a non-ordered array to unique elements', function (done) {
+  it('reduces a non-ordered array to unique elements', function () {
     const uniq = utils.uniq([1, 2, 3, 2, 1])
     assert.deepEqual(uniq, [1, 2, 3])
-    done()
   })
 })
 
@@ -236,65 +232,56 @@ xxxxxxxxxxxxxxxxxx`
 })
 
 describe('valid_regexes', function () {
-  it('two valid', function (done) {
+  it('two valid', function () {
     const re_list = ['.*.exam.ple', '.*.example.com']
     assert.deepEqual(re_list, utils.valid_regexes(re_list))
-    done()
   })
 
-  it('one valid, one invalid', function (done) {
+  it('one valid, one invalid', function () {
     const re_list = ['*.exam.ple', '.*.example.com']
     assert.deepEqual(['.*.example.com'], utils.valid_regexes(re_list))
-    done()
   })
 
-  it('one valid, two invalid', function (done) {
+  it('one valid, two invalid', function () {
     const re_list = ['[', '*.exam.ple', '.*.example.com']
     assert.deepEqual(['.*.example.com'], utils.valid_regexes(re_list))
-    done()
   })
 })
 
 describe('base64', function () {
-  it('base64', function (done) {
+  it('base64', function () {
     assert.equal(utils.base64('matt the tester'), 'bWF0dCB0aGUgdGVzdGVy')
-    done()
   })
 
-  it('unbase64', function (done) {
+  it('unbase64', function () {
     assert.equal(utils.unbase64('bWF0dCB0aGUgdGVzdGVy'), 'matt the tester')
-    done()
   })
 })
 
 describe('to_object', function () {
-  it('string', function (done) {
+  it('string', function () {
     assert.deepEqual(utils.to_object('matt,test'), { matt: true, test: true })
-    done()
   })
 
-  it('array', function (done) {
+  it('array', function () {
     assert.deepEqual(utils.to_object(['matt', 'test']), {
       matt: true,
       test: true,
     })
-    done()
   })
 })
 
 describe('extend', function () {
-  it('copies properties from one object', function (done) {
+  it('copies properties from one object', function () {
     const both = utils.extend({ first: 'boo' }, { second: 'ger' })
     assert.deepEqual({ first: 'boo', second: 'ger' }, both)
-    done()
   })
 
-  it('copies properties from multiple objects', function (done) {
+  it('copies properties from multiple objects', function () {
     assert.deepEqual(
       utils.extend({ first: 'boo' }, { second: 'ger' }, { third: 'eat' }),
       { first: 'boo', second: 'ger', third: 'eat' },
     )
-    done()
   })
 })
 
@@ -319,78 +306,67 @@ describe('node_min', function () {
 })
 
 describe('elapsed', function () {
-  it('returns 0 decimal places', function (done) {
+  it('returns 0 decimal places', function () {
     const start = new Date()
     start.setTime(start.getTime() - 3517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start, 0), '4')
-    done()
   })
 
-  it('returns 1 decimal place', function (done) {
+  it('returns 1 decimal place', function () {
     const start = new Date()
     start.setTime(start.getTime() - 3517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start, 1), '3.5')
-    done()
   })
 
-  it('returns 2 decimal places', function (done) {
+  it('returns 2 decimal places', function () {
     const start = new Date()
     start.setTime(start.getTime() - 3517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start, 2), '3.52')
-    done()
   })
 
-  it('default N > 5 has 0 decimal places', function (done) {
+  it('default N > 5 has 0 decimal places', function () {
     const start = new Date()
     start.setTime(start.getTime() - 13517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start), '14')
-    done()
   })
 
-  it('default N > 2 has 1 decimal places', function (done) {
+  it('default N > 2 has 1 decimal places', function () {
     const start = new Date()
     start.setTime(start.getTime() - 3517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start), '3.5')
-    done()
   })
 
-  it('default has 2 decimal places', function (done) {
+  it('default has 2 decimal places', function () {
     const start = new Date()
     start.setTime(start.getTime() - 1517) // 3.517 seconds ago
     assert.strictEqual(utils.elapsed(start), '1.52')
-    done()
   })
 })
 
 describe('prettySize', function () {
   // https://wikipedia.org/wiki/Binary_prefix units with 1024 base
   // should use binary prefix
-  it('formats into 1024 sized KiB', function (done) {
+  it('formats into 1024 sized KiB', function () {
     assert.equal(utils.prettySize(10000), '9.77KiB')
-    done()
   })
 
-  it('formats into 1024 sized MiB', function (done) {
+  it('formats into 1024 sized MiB', function () {
     assert.equal(utils.prettySize(10000000), '9.54MiB')
-    done()
   })
 
-  it('formats into 1024 sized GiB', function (done) {
+  it('formats into 1024 sized GiB', function () {
     assert.equal(utils.prettySize(10000000000), '9.31GiB')
-    done()
   })
 
-  it('formats into 1024 sized TiB', function (done) {
+  it('formats into 1024 sized TiB', function () {
     assert.equal(utils.prettySize(10000000000000), '9.09TiB')
-    done()
   })
 })
 
 describe('shuffle', function () {
-  it('randomly returns an element from an array', function (done) {
+  it('randomly returns an element from an array', function () {
     assert.equal(utils.shuffle(['only']), 'only')
     assert.ok(typeof utils.shuffle(['one', 'two']), 'string')
-    done()
   })
 })
 
