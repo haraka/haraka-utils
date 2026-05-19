@@ -4,6 +4,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [2.0.0] - 2026-05-18
+
+- sunset fns removed: decode_qp, asQuotedPrintable, encode_qp
+- test runner is node:test
+- remove unnecessary done callbacks in synchronous tests #33
+
 ### [1.1.4] - 2025-01-31
 
 - dep(eslint): upgrade to v9
@@ -65,3 +71,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [1.1.2]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.2
 [1.1.3]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.3
 [1.1.4]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.4
+[2.0.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.0.0
