@@ -4,6 +4,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [2.1.0] - 2026-05-27
+
+- feat(rfc1869): import from Haraka core
+- feat(FsyncWriteStream): moved from Haraka outbound
+- feat(TimerQueue): moved from Haraka outbound.
+- feat(cram_md5_response): moved from Haraka outbound/hmail
+- fix(extend): reject unsafe and ignore inherited enumerables
+- fix(copyDir): use lstatSync and skip symlinks
+- fix(wildcard_to_regexp): replaceAll so multi-wildcard patterns compile correctly
+- fix(createFile): drop fd-leaking openSync/writeSync for writeFileSync
+- fix(getVersion): drop the global cache
+- fix(copyFile): use explicit existsSync + lstatSync; throw Error not string
+- fix(mkDir): throw when path exists as a file
+- chore(uuid): use `crypto.randomUUID()`
+- chore(getGitCommitId): use `--format=%h`
+- chore: existsSync is now unconditionally `fs.existsSync`
+
 ### [2.0.0] - 2026-05-18
 
 - sunset fns removed: decode_qp, asQuotedPrintable, encode_qp
@@ -72,3 +89,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [1.1.3]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.3
 [1.1.4]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.4
 [2.0.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.0.0
+[2.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.0
