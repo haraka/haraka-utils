@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [2.1.1] - 2026-05-27
+
+- test fixes to mollify codeql
+
 ### [2.1.0] - 2026-05-27
 
 - feat(rfc1869): import from Haraka core
@@ -90,3 +94,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [1.1.4]: https://github.com/haraka/haraka-utils/releases/tag/v1.1.4
 [2.0.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.0.0
 [2.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.0
+[2.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.1
