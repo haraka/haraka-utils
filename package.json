@@ -1,24 +1,23 @@
 {
   "name": "haraka-utils",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Haraka general purpose functions",
   "main": "index.js",
   "files": [
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "lib"
   ],
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "format": "npm run prettier:fix && npm run lint:fix",
-    "lint": "npx eslint *.js test",
-    "lint:fix": "npx eslint *.js test --fix",
+    "lint": "npx eslint *.js lib test",
+    "lint:fix": "npx eslint *.js lib test --fix",
     "prettier": "npx prettier . --check",
     "prettier:fix": "npx prettier . --write --log-level=warn",
+    "qlty": "qlty smells --all",
     "test": "node --test",
+    "test:coverage": "npx c8 --reporter=text --reporter=text-summary npm test",
     "versions": "npx npm-dep-mgr check",
-    "versions:fix": "npx npm-dep-mgr update",
-    "test:coverage": "npx c8 --reporter=text --reporter=text-summary npm test"
+    "versions:fix": "npx npm-dep-mgr update"
   },
   "repository": {
     "type": "git",
@@ -36,7 +35,7 @@
   },
   "homepage": "https://github.com/haraka/haraka-utils#readme",
   "devDependencies": {
-    "@haraka/eslint-config": "^2.0.4"
+    "@haraka/eslint-config": "^3.0.0"
   },
   "prettier": {
     "singleQuote": true,

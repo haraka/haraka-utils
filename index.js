@@ -1,32 +1,17 @@
 'use strict'
 
 const child = require('node:child_process')
+const crypto = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-// copied from http://www.broofa.com/Tools/Math.uuid.js
-const CHARS =
-  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
 
-exports.uuid = function () {
-  const chars = CHARS
-  const uuid = new Array(36)
-  let rnd = 0
-  let r
-  for (let i = 0; i < 36; i++) {
-    if (i === 8 || i === 13 || i === 18 || i === 23) {
-      uuid[i] = '-'
-    } else if (i === 14) {
-      uuid[i] = '4'
-    } else {
-      if (rnd <= 0x02) rnd = (0x2000000 + Math.random() * 0x1000000) | 0
-      r = rnd & 0xf
-      rnd = rnd >> 4
-      uuid[i] = chars[i === 19 ? (r & 0x3) | 0x8 : r]
-    }
-  }
-  return uuid.join('')
-}
+exports.rfc1869 = require('./lib/rfc1869')
+exports.FsyncWriteStream = require('./lib/fsync_writestream')
+exports.TimerQueue = require('./lib/timer_queue')
+
+exports.uuid = () => crypto.randomUUID().toUpperCase()
 
 exports.in_array = function (item, array) {
   if (!array) return false
@@ -64,14 +49,14 @@ exports.uniq = function (arr) {
   return out
 }
 
-exports.extend = function (target) {
-  // http://stackoverflow.com/questions/14974864/
-  const sources = [].slice.call(arguments, 1)
-  sources.forEach(function (source) {
-    for (const prop in source) {
-      target[prop] = source[prop]
+exports.extend = function (target, ...sources) {
+  for (const source of sources) {
+    if (!source) continue
+    for (const [key, val] of Object.entries(source)) {
+      if (UNSAFE_KEYS.has(key)) continue
+      target[key] = val
     }
-  })
+  }
   return target
 }
 
@@ -132,7 +117,7 @@ exports.node_min = function (min, cur) {
   return true
 }
 
-exports.existsSync = require(exports.node_min('0.8') ? 'fs' : 'path').existsSync
+exports.existsSync = fs.existsSync
 
 exports.indexOfLF = function (buf, maxlength) {
   for (let i = 0; i < buf.length; i++) {
@@ -178,6 +163,16 @@ exports.unbase64 = function (str) {
   return Buffer.from(str, 'base64').toString('UTF-8')
 }
 
+// SMTP AUTH CRAM-MD5 challenge-response. challenge is base64-encoded per RFC 2195.
+exports.cram_md5_response = function (username, password, challenge) {
+  const decoded = exports.unbase64(challenge)
+  const digest = crypto
+    .createHmac('md5', password)
+    .update(decoded)
+    .digest('hex')
+  return exports.base64(`${username} ${digest}`)
+}
+
 // Fisher-Yates shuffle
 // http://bost.ocks.org/mike/shuffle/
 exports.shuffle = function (array) {
@@ -216,8 +211,8 @@ exports.elapsed = function (start, decimal_places) {
 exports.wildcard_to_regexp = function (str) {
   return `${str
     .replace(/[-[\]/{}()*+?.,\\^$|#\s]/g, '\\$&')
-    .replace('\\*', '.*')
-    .replace('\\?', '.')}$`
+    .replaceAll('\\*', '.*')
+    .replaceAll('\\?', '.')}$`
 }
 
 exports.line_regexp = /^([^\n]*\n)/
@@ -232,52 +227,42 @@ exports.copyDir = function (srcPath, dstPath) {
     const srcFile = path.join(srcPath, file)
     const dstFile = path.join(dstPath, file)
 
-    const srcStat = fs.statSync(srcFile)
+    // lstatSync does NOT follow symlinks; copyDir refuses to traverse them
+    // to prevent escaping the source root via attacker-controlled symlinks.
+    const srcStat = fs.lstatSync(srcFile)
 
+    if (srcStat.isSymbolicLink()) {
+      warningMsg(`skipping symlink '${srcFile}'`)
+      continue
+    }
     if (srcStat.isDirectory()) {
-      // if directory
-      exports.copyDir(srcFile, dstFile) // recurse
+      exports.copyDir(srcFile, dstFile)
     } else if (srcStat.isFile()) {
-      // if file
-      exports.copyFile(srcFile, dstFile) // copy to dstPath (no overwrite)
+      exports.copyFile(srcFile, dstFile)
     }
   }
 }
 
 exports.copyFile = function (srcFile, dstFile) {
-  try {
-    if (fs.statSync(dstFile).isFile()) {
+  if (fs.existsSync(dstFile)) {
+    if (fs.lstatSync(dstFile).isFile()) {
       warningMsg(`EEXIST, File exists '${dstFile}'`)
       return
     }
-    throw `EEXIST but not a file: '${dstFile}'`
-  } catch (e) {
-    // File NOT exists
-    if (e.code == 'ENOENT') {
-      exports.mkDir(path.dirname(dstFile))
-      fs.writeFileSync(dstFile, fs.readFileSync(srcFile))
-      createMsg(dstFile)
-    } else {
-      console.log(`copy ${srcFile} to ${dstFile}`)
-      throw e
-    }
+    throw new Error(`EEXIST but not a file: '${dstFile}'`)
   }
+  exports.mkDir(path.dirname(dstFile))
+  fs.writeFileSync(dstFile, fs.readFileSync(srcFile))
+  createMsg(dstFile)
 }
 
 exports.createFile = function (filePath, data, info = {}, force = false) {
-  try {
-    if (fs.existsSync(filePath) && !force) {
-      throw `${filePath} already exists`
-    }
-    exports.mkDir(path.dirname(filePath))
-    const fd = fs.openSync(filePath, 'w')
-    const output = data.replace(/%(\w+)%/g, function (i, m1) {
-      return info[m1]
-    })
-    fs.writeSync(fd, output, null)
-  } catch (e) {
-    warningMsg(`Unable to create file: ${e}`)
+  if (fs.existsSync(filePath) && !force) {
+    throw new Error(`${filePath} already exists`)
   }
+  exports.mkDir(path.dirname(filePath))
+  const output = data.replace(/%(\w+)%/g, (_, m1) => info[m1])
+  fs.writeFileSync(filePath, output)
 }
 
 function createMsg(dirPath) {
@@ -289,44 +274,28 @@ function warningMsg(msg) {
 }
 
 exports.mkDir = function (dstPath) {
-  try {
-    if (fs.statSync(dstPath).isDirectory()) return
-  } catch (ignore) {}
-
-  try {
-    fs.mkdirSync(dstPath, { recursive: true })
-    createMsg(dstPath)
-  } catch (e) {
-    // File exists
-    console.error(e)
-    if (e.errno == 17) {
-      warningMsg(e.message)
-    } else {
-      throw e
-    }
+  if (fs.existsSync(dstPath)) {
+    if (fs.lstatSync(dstPath).isDirectory()) return
+    throw new Error(`EEXIST but not a directory: '${dstPath}'`)
   }
+  fs.mkdirSync(dstPath, { recursive: true })
+  createMsg(dstPath)
 }
 
-exports.getGitCommitId = (dir) => {
-  return child
-    .spawnSync('git', ['-C', dir, 'show', '--format="%h"', '--no-patch'])
+exports.getGitCommitId = (dir) =>
+  child
+    .spawnSync('git', ['-C', dir, 'show', '--format=%h', '--no-patch'])
     .stdout.toString()
-    .replaceAll('"', '')
     .trim()
-}
 
 exports.getVersion = function (pkgDir) {
-  if (this._version) return this._version // cache
-
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json')))
-  this._version = pkg.version
+  let version = pkg.version
 
-  try {
-    // if within a git repo
-    fs.statSync(path.join(pkgDir, '.git'))
-    const commitId = this.getGitCommitId(pkgDir)
-    if (commitId) this._version += `/${commitId}`
-  } catch (ignore) {}
+  if (fs.existsSync(path.join(pkgDir, '.git'))) {
+    const commitId = exports.getGitCommitId(pkgDir)
+    if (commitId) version += `/${commitId}`
+  }
 
-  return this._version
+  return version
 }

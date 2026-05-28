@@ -1,6 +1,6 @@
 [![CI][ci-img]][ci-url]
 [![Coverage Status][cov-img]][cov-url]
-[![Code Climate][clim-img]][clim-url]
+[![Maintainability][qlty-img]][qlty-url]
 
 # haraka-utils
 
@@ -28,5 +28,5 @@ utils.getVersion('.') // '1.1.2/45e3812'
 [ci-img]: https://github.com/haraka/haraka-utils/actions/workflows/ci.yml/badge.svg
 [cov-url]: https://codecov.io/github/haraka/haraka-utils?branch=master
 [cov-img]: https://codecov.io/github/haraka/haraka-utils/coverage.svg
-[clim-img]: https://codeclimate.com/github/haraka/haraka-utils/badges/gpa.svg
-[clim-url]: https://codeclimate.com/github/haraka/haraka-utils
+[qlty-img]: https://qlty.sh/gh/haraka/projects/haraka-utils/maintainability.svg
+[qlty-url]: https://qlty.sh/gh/haraka/projects/haraka-utils
