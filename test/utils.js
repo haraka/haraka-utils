@@ -106,7 +106,10 @@ describe('to_object', () => {
   })
 
   it('skips undefined elements in array input', () => {
-    assert.deepEqual(utils.to_object(['a', undefined, 'b']), { a: true, b: true })
+    assert.deepEqual(utils.to_object(['a', undefined, 'b']), {
+      a: true,
+      b: true,
+    })
   })
 
   it('splits on whitespace, comma, semicolon (mixed delimiters)', () => {
@@ -130,7 +133,11 @@ describe('sort_keys', () => {
 
   it('sorts lexicographically (default String comparison)', () => {
     // Default Array.sort is lexicographic, so '10' < '2' < 'a'.
-    assert.deepEqual(utils.sort_keys({ 10: 'x', 2: 'y', a: 'z' }), ['10', '2', 'a'])
+    assert.deepEqual(utils.sort_keys({ 10: 'x', 2: 'y', a: 'z' }), [
+      '10',
+      '2',
+      'a',
+    ])
   })
 })
 
@@ -241,6 +248,11 @@ describe('extend', () => {
     assert.equal(result.own, 'kept')
     assert.equal(result.inherited, undefined)
   })
+
+  it('skips null / undefined sources', () => {
+    const result = utils.extend({ a: 1 }, null, undefined, { b: 2 })
+    assert.deepEqual(result, { a: 1, b: 2 })
+  })
 })
 
 describe('wildcard_to_regexp', () => {
@@ -276,6 +288,13 @@ describe('node_min', () => {
     assert.ok(!utils.node_min('1.0.0', '0.10.0'))
     assert.ok(!utils.node_min('1.0.0', '0.12.0'))
     assert.ok(!utils.node_min('20.0.1', '18.0.1'))
+  })
+
+  it('falls back to process.version when cur is omitted', () => {
+    // Project targets Node 20+, so any tiny minimum must compare true.
+    assert.ok(utils.node_min('0.0.1'))
+    // And a ridiculous future version must compare false.
+    assert.ok(!utils.node_min('999.0.0'))
   })
 })
 
@@ -335,6 +354,12 @@ describe('prettySize', () => {
   it('formats into 1024 sized TiB', () => {
     assert.equal(utils.prettySize(10000000000000), '9.09TiB')
   })
+
+  it('returns 0 for zero / undefined / null', () => {
+    assert.equal(utils.prettySize(0), 0)
+    assert.equal(utils.prettySize(undefined), 0)
+    assert.equal(utils.prettySize(null), 0)
+  })
 })
 
 describe('shuffle', () => {
@@ -364,6 +389,17 @@ describe('in_array', () => {
 
   it('returns true when item is present', () => {
     assert.equal(utils.in_array('2', testArr), true)
+  })
+
+  it('returns false when array argument is missing/falsy', () => {
+    assert.equal(utils.in_array(1, undefined), false)
+    assert.equal(utils.in_array(1, null), false)
+    assert.equal(utils.in_array(1, 0), false)
+  })
+
+  it('returns false when array argument is not an array', () => {
+    assert.equal(utils.in_array('foo', 'foo,bar'), false)
+    assert.equal(utils.in_array(1, { 0: 1, length: 1 }), false)
   })
 })
 
@@ -419,6 +455,18 @@ describe('createFile', () => {
     utils.createFile(tmpFile, 'second', {}, true)
     assert.equal(fs.readFileSync(tmpFile, 'utf8'), 'second')
   })
+
+  it('substitutes %NAME% template variables from info object', () => {
+    const tmpFile = path.join('test', 'temp1', 'templated')
+    utils.createFile(tmpFile, 'hello %who%, you have %count% messages', {
+      who: 'matt',
+      count: 3,
+    })
+    assert.equal(
+      fs.readFileSync(tmpFile, 'utf8'),
+      'hello matt, you have 3 messages',
+    )
+  })
 })
 
 describe('copyFile', () => {
@@ -452,7 +500,10 @@ describe('copyFile', () => {
     const srcFile = path.join('test', 'temp1', 'file')
     const dstDir = path.join('test', 'temp1', 'a-directory')
     fs.mkdirSync(dstDir, { recursive: true })
-    assert.throws(() => utils.copyFile(srcFile, dstDir), /EEXIST but not a file/)
+    assert.throws(
+      () => utils.copyFile(srcFile, dstDir),
+      /EEXIST but not a file/,
+    )
   })
 })
 
@@ -473,8 +524,14 @@ describe('copyDir', () => {
     fs.writeFileSync(path.join(srcDir, 'inner', 'deeper', 'leaf.txt'), 'leaf')
     utils.copyDir(srcDir, dstDir)
     assert.equal(fs.readFileSync(path.join(dstDir, 'top.txt'), 'utf8'), 'top')
-    assert.equal(fs.readFileSync(path.join(dstDir, 'inner', 'mid.txt'), 'utf8'), 'mid')
-    assert.equal(fs.readFileSync(path.join(dstDir, 'inner', 'deeper', 'leaf.txt'), 'utf8'), 'leaf')
+    assert.equal(
+      fs.readFileSync(path.join(dstDir, 'inner', 'mid.txt'), 'utf8'),
+      'mid',
+    )
+    assert.equal(
+      fs.readFileSync(path.join(dstDir, 'inner', 'deeper', 'leaf.txt'), 'utf8'),
+      'leaf',
+    )
   })
 
   it('skips dotfiles', () => {

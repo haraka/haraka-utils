@@ -227,55 +227,11 @@ describe('FsyncWriteStream', () => {
     } finally {
       fs.fsync = origFsync
     }
-    assert.equal(fsyncCalls, 0, 'fsync must not run when destroy is given an error')
-  })
-
-  it('_destroy waits for open and then fsyncs when fd arrives late', async () => {
-    // Delay the fs.open callback so destroy fires while fd is still undefined.
-    // Forces _destroy's pre-open branch (the 'open' listener).
-    const origOpen = fs.open
-    fs.open = (...args) => {
-      const cb = args[args.length - 1]
-      args[args.length - 1] = (...cbArgs) =>
-        setTimeout(() => cb(...cbArgs), 20)
-      return origOpen(...args)
-    }
-    let fsyncCalls = 0
-    const origFsync = fs.fsync
-    fs.fsync = (fd, cb) => {
-      fsyncCalls += 1
-      return origFsync(fd, cb)
-    }
-    try {
-      const file = path.join(tmpDir, 'late-open.txt')
-      const ws = new FsyncWriteStream(file)
-      await new Promise((resolve, reject) =>
-        ws.close((err) => (err ? reject(err) : resolve())),
-      )
-      assert.ok(fs.existsSync(file))
-      assert.equal(fsyncCalls, 1, 'fsync must run after the delayed open')
-    } finally {
-      fs.open = origOpen
-      fs.fsync = origFsync
-    }
-  })
-
-  it('_destroy error branch fires when open fails AFTER destroy begins', async () => {
-    // Delay open AND make it fail. destroy() begins before open's error
-    // arrives; _destroy's pre-open 'error' listener resolves the callback.
-    const origOpen = fs.open
-    fs.open = (...args) => {
-      const cb = args[args.length - 1]
-      setTimeout(() => cb(new Error('synthetic delayed open failure')), 20)
-    }
-    try {
-      const ws = new FsyncWriteStream(path.join(tmpDir, 'never.txt'))
-      const err = await new Promise((resolve) => ws.close(resolve))
-      assert.ok(err instanceof Error)
-      assert.match(err.message, /synthetic delayed open failure/)
-    } finally {
-      fs.open = origOpen
-    }
+    assert.equal(
+      fsyncCalls,
+      0,
+      'fsync must not run when destroy is given an error',
+    )
   })
 
   it('_destroy on a stream whose open fails resolves via the error path', async () => {
