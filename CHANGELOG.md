@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+- test fixes to mollify codeql
+
 ### [2.1.0] - 2026-05-27
 
 - feat(rfc1869): import from Haraka core

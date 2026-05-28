@@ -47,18 +47,18 @@ describe('uniq', () => {
 
 describe('valid_regexes', () => {
   it('two valid', () => {
-    const re_list = ['.*.exam.ple', '.*.example.com']
+    const re_list = ['.*\\.exam\\.ple', '.*\\.example\\.com']
     assert.deepEqual(re_list, utils.valid_regexes(re_list))
   })
 
   it('one valid, one invalid', () => {
-    const re_list = ['*.exam.ple', '.*.example.com']
-    assert.deepEqual(['.*.example.com'], utils.valid_regexes(re_list))
+    const re_list = ['*.exam.ple', '.*\\.example\\.com']
+    assert.deepEqual(['.*\\.example\\.com'], utils.valid_regexes(re_list))
   })
 
   it('one valid, two invalid', () => {
-    const re_list = ['[', '*.exam.ple', '.*.example.com']
-    assert.deepEqual(['.*.example.com'], utils.valid_regexes(re_list))
+    const re_list = ['[', '*.exam.ple', '.*\\.example\\.com']
+    assert.deepEqual(['.*\\.example\\.com'], utils.valid_regexes(re_list))
   })
 })
 
