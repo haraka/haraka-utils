@@ -56,14 +56,6 @@ describe('rfc1869', () => {
   describe('error cases', () => {
     const throwCases = [
       {
-        desc: 'MAIL FROM with space inside angle-bracket address',
-        args: ['mail', 'FROM:<user@dom ain>'],
-      },
-      {
-        desc: 'MAIL FROM with space BEFORE @ in address',
-        args: ['mail', 'FROM:<user name@domain>'],
-      },
-      {
         desc: "MAIL parse rejects a 'TO:' prefix",
         args: ['mail', 'TO:<user@domain>'],
       },
@@ -72,18 +64,29 @@ describe('rfc1869', () => {
         args: ['rcpt', 'FROM:<user@domain>'],
       },
       {
-        desc: 'RCPT TO with syntax error in address (space in address)',
+        desc: 'unbracketed trailing junk that is neither address nor param',
         args: ['rcpt', 'TO: user @domain bad'],
-      },
-      {
-        desc: 'RCPT TO unknown address (no @ and not postmaster/abuse)',
-        args: ['rcpt', 'TO:unknown'],
       },
     ]
 
     for (const { desc, args } of throwCases) {
       it(`throws: ${desc}`, () => {
         assert.throws(() => parse(...args), Error)
+      })
+    }
+  })
+
+  // Address-grammar validation is deferred to the caller's address parser
+  describe('address grammar deferred to caller', () => {
+    const deferredCases = [
+      ['mail', 'FROM:<user@dom ain>', ['<user@dom ain>']],
+      ['mail', 'FROM:<user name@domain>', ['<user name@domain>']],
+      ['rcpt', 'TO:unknown', ['unknown']],
+      ['rcpt', 'TO:<foo>', ['<foo>']],
+    ]
+    for (const [type, line, expected] of deferredCases) {
+      it(`${type.toUpperCase()} ${line} parses, defers validation`, () => {
+        assert.deepEqual(parse(type, line), expected)
       })
     }
   })
