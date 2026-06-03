@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [2.2.0] - 2026-06-03
+
+- feat: add `sanitize()` to strip C0 controls and DEL from untrusted strings
+
 ### [2.1.1] - 2026-06-02
 
 - refactor(rfc1869): defer address grammar to address parser
@@ -96,3 +100,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [2.0.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.0.0
 [2.1.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.0
 [2.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.1
+[2.2.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.2.0
