@@ -155,6 +155,15 @@ exports.regexp_escape = function (text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
+// Neutralize C0 controls and DEL so attacker-controlled input can't inject
+// CRLF, NUL, or escape sequences into SMTP replies, syslog records (RFC 5424),
+// or log lines. `replacement` defaults to removal; pass ' ' or '?' to keep the
+// surrounding text legible.
+exports.sanitize = function (str, { replacement = '' } = {}) {
+  // eslint-disable-next-line no-control-regex
+  return String(str ?? '').replace(/[\x00-\x1f\x7f]/g, replacement)
+}
+
 exports.base64 = function (str) {
   return Buffer.from(str, 'UTF-8').toString('base64')
 }

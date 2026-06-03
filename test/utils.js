@@ -179,6 +179,31 @@ describe('regexp_escape', () => {
   })
 })
 
+describe('sanitize', () => {
+  it('strips C0 controls, CR, LF and DEL by default', () => {
+    assert.equal(utils.sanitize('a\r\nb\x00c\x1bd\x7fe'), 'abcde')
+  })
+
+  it('replaces stripped chars when a replacement is given', () => {
+    assert.equal(utils.sanitize('a\r\nb', { replacement: ' ' }), 'a  b')
+    assert.equal(utils.sanitize('a\x00b', { replacement: '?' }), 'a?b')
+  })
+
+  it('replaces TAB along with other controls', () => {
+    assert.equal(utils.sanitize('a\tb', { replacement: ' ' }), 'a b')
+  })
+
+  it('coerces nullish and non-string input', () => {
+    assert.equal(utils.sanitize(null), '')
+    assert.equal(utils.sanitize(undefined), '')
+    assert.equal(utils.sanitize(450), '450')
+  })
+
+  it('leaves printable text untouched', () => {
+    assert.equal(utils.sanitize('hello world!'), 'hello world!')
+  })
+})
+
 describe('indexOfLF', () => {
   it('finds first LF in a buffer', () => {
     assert.equal(utils.indexOfLF(Buffer.from('foo\nbar')), 3)
