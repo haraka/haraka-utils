@@ -177,6 +177,14 @@ describe('regexp_escape', () => {
     assert.ok(pattern.test('a.b'))
     assert.ok(!pattern.test('axb'))
   })
+
+  // imported from plugin-headers
+  it('escapes all regex metacharacters', () => {
+    assert.equal(utils.regexp_escape('a.b'), 'a\\.b')
+    assert.equal(utils.regexp_escape('a.b.c.d'), 'a\\.b\\.c\\.d')
+    assert.equal(utils.regexp_escape('foo[bar]'), 'foo\\[bar\\]')
+    assert.equal(utils.regexp_escape('a+b*c?'), 'a\\+b\\*c\\?')
+  })
 })
 
 describe('sanitize', () => {
@@ -193,6 +201,13 @@ describe('sanitize', () => {
     assert.equal(utils.sanitize('a\tb', { replacement: ' ' }), 'a b')
   })
 
+  it('preserves TAB when keepTab is set', () => {
+    assert.equal(
+      utils.sanitize('a\tb\nc', { replacement: ' ', keepTab: true }),
+      'a\tb c',
+    )
+  })
+
   it('coerces nullish and non-string input', () => {
     assert.equal(utils.sanitize(null), '')
     assert.equal(utils.sanitize(undefined), '')
@@ -201,6 +216,22 @@ describe('sanitize', () => {
 
   it('leaves printable text untouched', () => {
     assert.equal(utils.sanitize('hello world!'), 'hello world!')
+  })
+
+  // imported from plugin-headers
+  it('strips control characters but keeps printable text', () => {
+    assert.equal(
+      utils.sanitize('hello\r\nworld', { replacement: '?' }),
+      'hello??world',
+    )
+    assert.equal(
+      utils.sanitize('plain text', { replacement: '?' }),
+      'plain text',
+    )
+    assert.equal(
+      utils.sanitize('with\x00null', { replacement: '?' }),
+      'with?null',
+    )
   })
 })
 
