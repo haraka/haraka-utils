@@ -142,7 +142,7 @@ exports.valid_regexes = function (list, file) {
   for (let i = 0; i < list.length; i++) {
     try {
       new RegExp(list[i])
-    } catch (e) {
+    } catch {
       console.error(`invalid regex in ${file}, ${list[i]}`)
       continue
     }
@@ -158,10 +158,12 @@ exports.regexp_escape = function (text) {
 // Neutralize C0 controls and DEL so attacker-controlled input can't inject
 // CRLF, NUL, or escape sequences into SMTP replies, syslog records (RFC 5424),
 // or log lines. `replacement` defaults to removal; pass ' ' or '?' to keep the
-// surrounding text legible.
-exports.sanitize = function (str, { replacement = '' } = {}) {
+// surrounding text legible. `keepTab` preserves HT (\x09), which RFC 5424
+// permits in syslog message text.
+exports.sanitize = function (str, { replacement = '', keepTab = false } = {}) {
   // eslint-disable-next-line no-control-regex
-  return String(str ?? '').replace(/[\x00-\x1f\x7f]/g, replacement)
+  const re = keepTab ? /[\x00-\x08\x0a-\x1f\x7f]/g : /[\x00-\x1f\x7f]/g
+  return String(str ?? '').replace(re, replacement)
 }
 
 exports.base64 = function (str) {
@@ -294,8 +296,8 @@ exports.mkDir = function (dstPath) {
 exports.getGitCommitId = (dir) =>
   child
     .spawnSync('git', ['-C', dir, 'show', '--format=%h', '--no-patch'])
-    .stdout.toString()
-    .trim()
+    .stdout?.toString()
+    ?.trim()
 
 exports.getVersion = function (pkgDir) {
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json')))
