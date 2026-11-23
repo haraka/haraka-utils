@@ -258,6 +258,34 @@ describe('auth_results_value', () => {
     }
   })
 
+  it('leaves U-label domains bare (RFC 8601 §1.5.2)', () => {
+    for (const v of [
+      'alice@bücher.example',
+      'jörg@bücher.example',
+      '@bücher.example',
+      'bücher.example',
+      '例え.テスト',
+    ]) {
+      assert.equal(utils.auth_results_value(v), v)
+    }
+  })
+
+  it('quotes U-label domains that fail IDNA or LDH rules', () => {
+    for (const v of [
+      'alice@bad;ü.example',
+      'alice@ü；x.example',
+      'alice@ü"x.example',
+      'alice@ü_x.example',
+      'alice@-ü.example',
+      'alice@ü-.example',
+      'alice@ü x.example',
+      'alice@ü。example',
+      'bücher',
+    ]) {
+      assert.equal(utils.auth_results_value(v), `"${v.replaceAll('"', '\\"')}"`)
+    }
+  })
+
   it('escapes quotes and backslashes inside the quoted-string', () => {
     assert.equal(utils.auth_results_value('a"b\\c'), '"a\\"b\\\\c"')
   })

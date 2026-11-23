@@ -4,6 +4,7 @@ const child = require('node:child_process')
 const crypto = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const { domainToASCII } = require('node:url')
 
 const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
 
@@ -182,9 +183,11 @@ function is_mime_token(str) {
   return true
 }
 
+const is_non_ascii = (c) => c.codePointAt(0) > 0x7f
+
 // RFC 5322 §3.2.3, with RFC 6531 UTF-8 atext
 const is_atext = (c) =>
-  is_ascii_alnum(c) || ATEXT_SYMBOLS.has(c) || c.codePointAt(0) > 0x7f
+  is_ascii_alnum(c) || ATEXT_SYMBOLS.has(c) || is_non_ascii(c)
 
 const is_dot_atom = (str) =>
   str.split('.').every((atom) => atom !== '' && [...atom].every(is_atext))
@@ -207,10 +210,19 @@ function is_sub_domain(label) {
   return [...label].every((c) => is_ascii_alnum(c) || c === '-')
 }
 
+// RFC 8601 §1.5.2 admits U-labels. domainToASCII (UTS #46) skips the hyphen
+// checks and passes ASCII delimiters through into the A-label, so the result
+// must still satisfy the LDH rules.
+function is_domain_label(label) {
+  if (![...label].some(is_non_ascii)) return is_sub_domain(label)
+  if (label.startsWith('-') || label.endsWith('-')) return false
+  return is_sub_domain(domainToASCII(label))
+}
+
 // RFC 6376 §3.5 requires at least two labels
 function is_domain_name(str) {
   const labels = str.split('.')
-  return labels.length > 1 && labels.every(is_sub_domain)
+  return labels.length > 1 && labels.every(is_domain_label)
 }
 
 const quote = (str) =>
@@ -226,7 +238,8 @@ exports.auth_results_value = function (str) {
 
   const at = clean.lastIndexOf('@')
   const domain = clean.slice(at + 1)
-  if (at === -1 || !is_domain_name(domain)) return quote(clean)
+  if (!is_domain_name(domain)) return quote(clean)
+  if (at === -1) return clean
 
   const local = clean.slice(0, at)
   if (local === '' || is_dot_atom(local) || is_quoted_string(local))
