@@ -20,6 +20,15 @@ Gets the version of the NPM package located at dir. If the dir is a git repo, it
 utils.getVersion('.') // '1.1.2/45e3812'
 ```
 
+### auth_results_value (str)
+
+Formats str as an RFC 8601 Authentication-Results property value. Tokens and addr-specs are returned bare; anything else becomes a quoted-string.
+
+```js
+utils.auth_results_value('example.com') // 'example.com'
+utils.auth_results_value('x; dkim=pass') // '"x; dkim=pass"'
+```
+
 ## See Also
 
 - [haraka-net-utils](https://www.npmjs.com/package/haraka-net-utils)

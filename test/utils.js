@@ -187,6 +187,52 @@ describe('regexp_escape', () => {
   })
 })
 
+describe('auth_results_value', () => {
+  it('leaves tokens and addr-specs bare', () => {
+    for (const v of [
+      'bob',
+      'example.com',
+      'alice+tag@example.com',
+      '@example.com',
+      "o'brien",
+    ]) {
+      assert.equal(utils.auth_results_value(v), v)
+    }
+  })
+
+  it('quotes values that would start a forged resinfo', () => {
+    assert.equal(
+      utils.auth_results_value('x; dkim=pass header.d=bank.example'),
+      '"x; dkim=pass header.d=bank.example"',
+    )
+    assert.equal(utils.auth_results_value('x;dmarc=pass'), '"x;dmarc=pass"')
+    assert.equal(
+      utils.auth_results_value('[tag:a;dkim=pass]'),
+      '"[tag:a;dkim=pass]"',
+    )
+  })
+
+  it('quotes tspecials a bare pvalue cannot carry', () => {
+    for (const v of ['a=b', 'sel(x', 'a/b', 'a@b@c', 'a@', '']) {
+      assert.equal(utils.auth_results_value(v), `"${v}"`)
+    }
+  })
+
+  it('escapes quotes and backslashes inside the quoted-string', () => {
+    assert.equal(utils.auth_results_value('a"b\\c'), '"a\\"b\\\\c"')
+  })
+
+  it('strips control characters', () => {
+    assert.equal(utils.auth_results_value('bob\r\n'), 'bob')
+    assert.equal(utils.auth_results_value('a b\r\nX: y'), '"a bX: y"')
+  })
+
+  it('coerces nullish and non-string input', () => {
+    assert.equal(utils.auth_results_value(undefined), '""')
+    assert.equal(utils.auth_results_value(42), '42')
+  })
+})
+
 describe('sanitize', () => {
   it('strips C0 controls, CR, LF and DEL by default', () => {
     assert.equal(utils.sanitize('a\r\nb\x00c\x1bd\x7fe'), 'abcde')

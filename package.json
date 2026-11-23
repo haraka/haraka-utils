@@ -1,6 +1,6 @@
 {
   "name": "haraka-utils",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Haraka general purpose functions",
   "main": "index.js",
   "files": [
@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/haraka/haraka-utils#readme",
   "devDependencies": {
-    "@haraka/eslint-config": "^3.0.0"
+    "@haraka/eslint-config": "^3.0.1"
   },
   "prettier": {
     "singleQuote": true,

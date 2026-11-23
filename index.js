@@ -166,6 +166,16 @@ exports.sanitize = function (str, { replacement = '', keepTab = false } = {}) {
   return String(str ?? '').replace(re, replacement)
 }
 
+// RFC 8601 §2.2 pvalue: a MIME token, an addr-spec, or a quoted-string.
+// Everything else is quoted
+const AR_BARE_PVALUE = /^([\w!#$%&'*+\-.^`{|}~]*@)?[\w!#$%&'*+\-.^`{|}~]+$/
+
+exports.auth_results_value = function (str) {
+  const clean = exports.sanitize(str)
+  if (AR_BARE_PVALUE.test(clean)) return clean
+  return `"${clean.replace(/["\\]/g, '\\$&')}"`
+}
+
 exports.base64 = function (str) {
   return Buffer.from(str, 'UTF-8').toString('base64')
 }
