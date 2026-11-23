@@ -166,14 +166,72 @@ exports.sanitize = function (str, { replacement = '', keepTab = false } = {}) {
   return String(str ?? '').replace(re, replacement)
 }
 
-// RFC 8601 §2.2 pvalue: a MIME token, an addr-spec, or a quoted-string.
-// Everything else is quoted
-const AR_BARE_PVALUE = /^([\w!#$%&'*+\-.^`{|}~]*@)?[\w!#$%&'*+\-.^`{|}~]+$/
+const MIME_TSPECIALS = new Set('()<>@,;:\\"/[]?=')
+const ATEXT_SYMBOLS = new Set("!#$%&'*+-/=?^_`{|}~")
 
+const is_ascii_alnum = (c) =>
+  (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+
+// RFC 2045 §5.1
+function is_mime_token(str) {
+  if (!str) return false
+  for (const c of str) {
+    const code = c.codePointAt(0)
+    if (code <= 0x20 || code >= 0x7f || MIME_TSPECIALS.has(c)) return false
+  }
+  return true
+}
+
+// RFC 5322 §3.2.3, with RFC 6531 UTF-8 atext
+const is_atext = (c) =>
+  is_ascii_alnum(c) || ATEXT_SYMBOLS.has(c) || c.codePointAt(0) > 0x7f
+
+const is_dot_atom = (str) =>
+  str.split('.').every((atom) => atom !== '' && [...atom].every(is_atext))
+
+// RFC 5322 §3.2.4
+function is_quoted_string(str) {
+  if (str.length < 2 || !str.startsWith('"') || !str.endsWith('"')) return false
+  const last = str.length - 1
+  for (let i = 1; i < last; i++) {
+    if (str[i] === '"') return false
+    if (str[i] === '\\' && ++i === last) return false
+  }
+  return true
+}
+
+// RFC 5321 §4.1.2 sub-domain
+function is_sub_domain(label) {
+  if (label === '' || label.length > 63) return false
+  if (label.startsWith('-') || label.endsWith('-')) return false
+  return [...label].every((c) => is_ascii_alnum(c) || c === '-')
+}
+
+// RFC 6376 §3.5 requires at least two labels
+function is_domain_name(str) {
+  const labels = str.split('.')
+  return labels.length > 1 && labels.every(is_sub_domain)
+}
+
+const quote = (str) =>
+  `"${str.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`
+
+// RFC 8601 §2.2 pvalue: an email identity MUST be [local-part] "@"
+// domain-name; anything else is a MIME token or a quoted-string. Quoting
+// keeps ';' and whitespace in attacker-controlled input from starting a
+// forged resinfo clause.
 exports.auth_results_value = function (str) {
   const clean = exports.sanitize(str)
-  if (AR_BARE_PVALUE.test(clean)) return clean
-  return `"${clean.replace(/["\\]/g, '\\$&')}"`
+  if (is_mime_token(clean)) return clean
+
+  const at = clean.lastIndexOf('@')
+  const domain = clean.slice(at + 1)
+  if (at === -1 || !is_domain_name(domain)) return quote(clean)
+
+  const local = clean.slice(0, at)
+  if (local === '' || is_dot_atom(local) || is_quoted_string(local))
+    return clean
+  return `${quote(local)}@${domain}`
 }
 
 exports.base64 = function (str) {

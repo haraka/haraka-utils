@@ -213,7 +213,47 @@ describe('auth_results_value', () => {
   })
 
   it('quotes tspecials a bare pvalue cannot carry', () => {
-    for (const v of ['a=b', 'sel(x', 'a/b', 'a@b@c', 'a@', '']) {
+    for (const v of ['a=b', 'sel(x', 'a/b', 'a@b@c', 'a@', '', 'jörg']) {
+      assert.equal(utils.auth_results_value(v), `"${v}"`)
+    }
+  })
+
+  it('leaves addresses with atext local-parts bare', () => {
+    for (const v of [
+      'a=b@example.com',
+      'a/b@example.com',
+      'first.last@example.com',
+      'jörg@example.com',
+      '"a b"@example.com',
+    ]) {
+      assert.equal(utils.auth_results_value(v), v)
+    }
+  })
+
+  it('quotes only the local-part when the domain is valid', () => {
+    assert.equal(
+      utils.auth_results_value('x; dkim=pass@bank.example'),
+      '"x; dkim=pass"@bank.example',
+    )
+    assert.equal(
+      utils.auth_results_value('a b@example.com'),
+      '"a b"@example.com',
+    )
+    assert.equal(
+      utils.auth_results_value('a@b@example.com'),
+      '"a@b"@example.com',
+    )
+    assert.equal(utils.auth_results_value('.a@example.com'), '".a"@example.com')
+  })
+
+  it('quotes the whole value when the domain is malformed', () => {
+    for (const v of [
+      'alice@bad!example.com',
+      'alice@.example.com',
+      'alice@example-.com',
+      'alice@localhost',
+      'alice@[192.0.2.1]',
+    ]) {
       assert.equal(utils.auth_results_value(v), `"${v}"`)
     }
   })
