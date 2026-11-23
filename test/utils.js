@@ -280,9 +280,21 @@ describe('auth_results_value', () => {
       'alice@ü-.example',
       'alice@ü x.example',
       'alice@ü。example',
+      'alice@ü／x.example',
       'bücher',
     ]) {
       assert.equal(utils.auth_results_value(v), `"${v.replaceAll('"', '\\"')}"`)
+    }
+  })
+
+  it('quotes U-labels carrying URL delimiters domainToASCII truncates at', () => {
+    for (const [v, expected] of [
+      ['alice@example.ü/; dkim=pass', '"alice@example.ü/; dkim=pass"'],
+      ['example.ü?; dkim=pass', '"example.ü?; dkim=pass"'],
+      ['example.ü#; dmarc=pass', '"example.ü#; dmarc=pass"'],
+      ['example.ü\\;spf=pass', '"example.ü\\\\;spf=pass"'],
+    ]) {
+      assert.equal(utils.auth_results_value(v), expected)
     }
   })
 

@@ -203,18 +203,22 @@ function is_quoted_string(str) {
   return true
 }
 
+const is_ldh = (c) => is_ascii_alnum(c) || c === '-'
+
 // RFC 5321 §4.1.2 sub-domain
 function is_sub_domain(label) {
   if (label === '' || label.length > 63) return false
   if (label.startsWith('-') || label.endsWith('-')) return false
-  return [...label].every((c) => is_ascii_alnum(c) || c === '-')
+  return [...label].every(is_ldh)
 }
 
-// RFC 8601 §1.5.2 admits U-labels. domainToASCII (UTS #46) skips the hyphen
-// checks and passes ASCII delimiters through into the A-label, so the result
-// must still satisfy the LDH rules.
+// RFC 8601 §1.5.2 admits U-labels. domainToASCII is the WHATWG host parser:
+// it stops at URL delimiters ('/', '?', '#', '\') and skips the IDNA hyphen
+// checks, so the label's own ASCII must be LDH before it is converted.
 function is_domain_label(label) {
-  if (![...label].some(is_non_ascii)) return is_sub_domain(label)
+  const chars = [...label]
+  if (!chars.some(is_non_ascii)) return is_sub_domain(label)
+  if (!chars.every((c) => is_ldh(c) || is_non_ascii(c))) return false
   if (label.startsWith('-') || label.endsWith('-')) return false
   return is_sub_domain(domainToASCII(label))
 }
