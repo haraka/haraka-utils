@@ -4,6 +4,7 @@ const child = require('node:child_process')
 const crypto = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const { domainToASCII } = require('node:url')
 
 const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
 
@@ -164,6 +165,90 @@ exports.sanitize = function (str, { replacement = '', keepTab = false } = {}) {
   // eslint-disable-next-line no-control-regex
   const re = keepTab ? /[\x00-\x08\x0a-\x1f\x7f]/g : /[\x00-\x1f\x7f]/g
   return String(str ?? '').replace(re, replacement)
+}
+
+const MIME_TSPECIALS = new Set('()<>@,;:\\"/[]?=')
+const ATEXT_SYMBOLS = new Set("!#$%&'*+-/=?^_`{|}~")
+
+const is_ascii_alnum = (c) =>
+  (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+
+// RFC 2045 §5.1
+function is_mime_token(str) {
+  if (!str) return false
+  for (const c of str) {
+    const code = c.codePointAt(0)
+    if (code <= 0x20 || code >= 0x7f || MIME_TSPECIALS.has(c)) return false
+  }
+  return true
+}
+
+const is_non_ascii = (c) => c.codePointAt(0) > 0x7f
+
+// RFC 5322 §3.2.3, with RFC 6531 UTF-8 atext
+const is_atext = (c) =>
+  is_ascii_alnum(c) || ATEXT_SYMBOLS.has(c) || is_non_ascii(c)
+
+const is_dot_atom = (str) =>
+  str.split('.').every((atom) => atom !== '' && [...atom].every(is_atext))
+
+// RFC 5322 §3.2.4
+function is_quoted_string(str) {
+  if (str.length < 2 || !str.startsWith('"') || !str.endsWith('"')) return false
+  const last = str.length - 1
+  for (let i = 1; i < last; i++) {
+    if (str[i] === '"') return false
+    if (str[i] === '\\' && ++i === last) return false
+  }
+  return true
+}
+
+const is_ldh = (c) => is_ascii_alnum(c) || c === '-'
+
+// RFC 5321 §4.1.2 sub-domain
+function is_sub_domain(label) {
+  if (label === '' || label.length > 63) return false
+  if (label.startsWith('-') || label.endsWith('-')) return false
+  return [...label].every(is_ldh)
+}
+
+// RFC 8601 §1.5.2 admits U-labels. domainToASCII is the WHATWG host parser:
+// it stops at URL delimiters ('/', '?', '#', '\') and skips the IDNA hyphen
+// checks, so the label's own ASCII must be LDH before it is converted.
+function is_domain_label(label) {
+  const chars = [...label]
+  if (!chars.some(is_non_ascii)) return is_sub_domain(label)
+  if (!chars.every((c) => is_ldh(c) || is_non_ascii(c))) return false
+  if (label.startsWith('-') || label.endsWith('-')) return false
+  return is_sub_domain(domainToASCII(label))
+}
+
+// RFC 6376 §3.5 requires at least two labels
+function is_domain_name(str) {
+  const labels = str.split('.')
+  return labels.length > 1 && labels.every(is_domain_label)
+}
+
+const quote = (str) =>
+  `"${str.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`
+
+// RFC 8601 §2.2 pvalue: an email identity MUST be [local-part] "@"
+// domain-name; anything else is a MIME token or a quoted-string. Quoting
+// keeps ';' and whitespace in attacker-controlled input from starting a
+// forged resinfo clause.
+exports.auth_results_value = function (str) {
+  const clean = exports.sanitize(str)
+  if (is_mime_token(clean)) return clean
+
+  const at = clean.lastIndexOf('@')
+  const domain = clean.slice(at + 1)
+  if (!is_domain_name(domain)) return quote(clean)
+  if (at === -1) return clean
+
+  const local = clean.slice(0, at)
+  if (local === '' || is_dot_atom(local) || is_quoted_string(local))
+    return clean
+  return `${quote(local)}@${domain}`
 }
 
 exports.base64 = function (str) {

@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Unreleased
 
+### [2.3.0] - 2026-11-22
+
+- feat: add auth_results_value() (RFC 8601 pvalue)
+
 ### [2.2.1] - 2026-06-04
 
 - fix(getVersion): use optional chaining to avoid crashes
@@ -107,3 +111,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 [2.1.1]: https://github.com/haraka/haraka-utils/releases/tag/v2.1.1
 [2.2.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.2.0
 [2.2.1]: https://github.com/haraka/haraka-utils/releases/tag/v2.2.1
+[2.3.0]: https://github.com/haraka/haraka-utils/releases/tag/v2.3.0
